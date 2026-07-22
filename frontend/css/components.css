@@ -1,0 +1,180 @@
+/* Primary Button */
+
+.btn-primary{
+
+    background:#4F46E5;
+    color:white;
+    padding:14px 26px;
+    border-radius:12px;
+    transition:.3s;
+    font-weight:600;
+
+}
+
+.btn-primary:hover{
+
+    background:#4338CA;
+
+}
+
+/* Card */
+
+.card{
+
+    background:white;
+    border-radius:18px;
+    box-shadow:0 8px 24px rgba(0,0,0,.08);
+    padding:24px;
+
+}
+/* ==========================
+   SIDEBAR
+========================== */
+
+.sidebar{
+
+    width:270px;
+    height:100vh;
+
+    background:#ffffff;
+
+    position:fixed;
+
+    left:0;
+    top:0;
+
+    padding:30px;
+
+    display:flex;
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    border-right:1px solid #E5E7EB;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
+
+}
+
+.logo{
+
+    display:flex;
+    align-items:center;
+
+    gap:15px;
+
+    margin-bottom:50px;
+
+}
+
+.logo-icon{
+
+    width:55px;
+    height:55px;
+
+    background:linear-gradient(135deg,#4F46E5,#7C3AED);
+
+    border-radius:14px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:24px;
+
+}
+
+.logo-text h2{
+
+    font-size:20px;
+
+}
+
+.logo-text p{
+
+    color:#64748B;
+    font-size:13px;
+
+}
+
+.menu{
+
+    list-style:none;
+
+}
+
+.menu li{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    margin-bottom:8px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+    font-weight:500;
+
+}
+
+.menu li:hover{
+
+    background:#EEF2FF;
+
+    color:#4F46E5;
+
+}
+
+.menu li.active{
+
+    background:#4F46E5;
+
+    color:white;
+
+}
+
+.menu svg{
+
+    width:20px;
+
+}
+
+.logout-btn{
+
+    width:100%;
+
+    background:#EF4444;
+
+    color:white;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    font-size:15px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    transition:.3s;
+
+}
+
+.logout-btn:hover{
+
+    background:#DC2626;
+
+}

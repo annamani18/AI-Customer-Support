@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sentiment Analysis | AI Customer Support Assistant</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/sentiment.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+
+<div id="sidebar-container"></div>
+
+<main class="sentiment-page">
+<header class="sentiment-navbar">
+
+    <div>
+
+        <h1>Sentiment Analysis</h1>
+
+        <p>Analyze customer emotions using Artificial Intelligence.</p>
+
+    </div>
+
+    <div class="navbar-actions">
+
+        <div class="search-box">
+
+            <i data-lucide="search"></i>
+
+            <input
+                type="text"
+                placeholder="Search sentiment">
+
+        </div>
+
+        <button class="icon-btn">
+
+            <i data-lucide="bell"></i>
+
+        </button>
+
+        <button class="icon-btn">
+
+            <i data-lucide="moon"></i>
+
+        </button>
+
+        <div class="profile">
+
+            HM
+
+        </div>
+
+    </div>
+
+</header>
+<section class="message-section">
+
+<div class="message-card">
+
+<h2>
+
+Customer Message
+
+</h2>
+
+<textarea
+id="customerMessage"
+rows="5">
+
+I am really disappointed. My package never arrived.
+
+</textarea>
+
+<button id="analyzeSentiment">
+
+<i data-lucide="heart-pulse"></i>
+
+Analyze Sentiment
+
+</button>
+
+</div>
+
+</section>
+<section class="results-grid">
+
+<div class="result-card">
+
+<h3>😊 Sentiment</h3>
+
+<h2 id="sentimentResult">
+
+Negative
+
+</h2>
+
+</div>
+
+<div class="result-card">
+
+<h3>📊 Confidence</h3>
+
+<h2 id="confidenceResult">
+
+98%
+
+</h2>
+
+</div>
+
+<div class="result-card">
+
+<h3>⚡ Priority</h3>
+
+<h2 id="priorityResult">
+
+High
+
+</h2>
+
+</div>
+
+<div class="result-card">
+
+<h3>🎯 Emotion</h3>
+
+<h2 id="emotionResult">
+
+Frustrated
+
+</h2>
+
+</div>
+
+</section>
+<section class="recommendation-grid">
+
+<div class="recommend-card">
+
+<h3>
+
+🤖 AI Recommendation
+
+</h3>
+
+<p id="recommendationText">
+
+The customer appears frustrated. Respond with empathy and prioritize the issue for immediate attention.
+
+</p>
+
+</div>
+
+<div class="recommend-card">
+
+<h3>
+
+📋 Suggested Action
+
+</h3>
+
+<p id="actionText">
+
+Assign to a senior support agent and provide a delivery status update.
+
+</p>
+
+</div>
+
+</section>
+<section class="history-card">
+
+<h2>
+
+Recent Sentiment Analysis
+
+</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Customer</th>
+
+<th>Sentiment</th>
+
+<th>Emotion</th>
+
+<th>Confidence</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>Sarah Johnson</td>
+
+<td>Negative</td>
+
+<td>Frustrated</td>
+
+<td>98%</td>
+
+</tr>
+
+<tr>
+
+<td>David Miller</td>
+
+<td>Positive</td>
+
+<td>Happy</td>
+
+<td>99%</td>
+
+</tr>
+
+<tr>
+
+<td>Emma Wilson</td>
+
+<td>Neutral</td>
+
+<td>Calm</td>
+
+<td>96%</td>
+
+</tr>
+
+<tr>
+
+<td>John Carter</td>
+
+<td>Negative</td>
+
+<td>Angry</td>
+
+<td>97%</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+</main>
+
+<script>
+
+fetch("components/sidebar.html")
+
+.then(response => response.text())
+
+.then(data => {
+
+document.getElementById("sidebar-container").innerHTML = data;
+
+lucide.createIcons();
+
+});
+
+</script>
+
+<script src="js/sentiment.js"></script>
+
+</body>
+
+</html>

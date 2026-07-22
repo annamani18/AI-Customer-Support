@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Chat | AI Customer Support Assistant</title>
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <main class="chat-page">
+<!-- ======================
+             TOP NAVBAR
+        ======================= -->
+
+        <header class="chat-navbar">
+
+            <div>
+
+                <h1>AI Customer Support</h1>
+
+                <p>Manage conversations with AI assistance</p>
+
+            </div>
+
+            <div class="navbar-actions">
+
+                <div class="search-box">
+
+                    <i data-lucide="search"></i>
+
+                    <input
+                        type="text"
+                        placeholder="Search customers...">
+
+                </div>
+
+                <button class="icon-btn">
+                    <i data-lucide="bell"></i>
+                </button>
+
+                <button class="icon-btn">
+                    <i data-lucide="moon"></i>
+                </button>
+
+                <div class="profile">
+
+                    HM
+
+                </div>
+
+            </div>
+
+        </header>
+        <!-- ======================
+             CHAT CONTAINER
+        ======================= -->
+
+        <section class="chat-container">
+
+            <!-- LEFT PANEL -->
+
+            <aside class="chat-history">
+
+                <button class="new-chat-btn">
+
+                    <i data-lucide="plus"></i>
+
+                    New Chat
+
+                </button>
+
+                <div class="history-search">
+
+                    <i data-lucide="search"></i>
+
+                    <input
+                        type="text"
+                        placeholder="Search conversation">
+
+                </div>
+
+                <div class="history-list">
+                    <div class="history-item active">
+
+                        <img src="assets/avatars/avatar1.png" alt="">
+
+                        <div>
+
+                            <h4>Sarah Johnson</h4>
+
+                            <p>Refund Request</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="history-item">
+
+                        <img src="assets/avatars/avatar2.png" alt="">
+
+                        <div>
+
+                            <h4>David Miller</h4>
+
+                            <p>Shipping Delay</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="history-item">
+
+                        <img src="assets/avatars/avatar3.png" alt="">
+
+                        <div>
+
+                            <h4>Emma Wilson</h4>
+
+                            <p>Password Reset</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="history-item">
+
+                        <img src="assets/avatars/avatar4.png" alt="">
+
+                        <div>
+
+                            <h4>John Carter</h4>
+
+                            <p>Payment Failed</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </aside>  
+            <!-- CENTER PANEL -->
+
+            <section class="chat-window">
+
+                <div class="chat-header">
+
+                    <div>
+
+                        <h3>Sarah Johnson</h3>
+
+                        <span>🟢 Online</span>
+
+                    </div>
+
+                </div>
+
+                <div class="messages">
+                    <div class="message customer">
+
+                        <p>
+
+                            Hi! I want to return the shoes I ordered.
+
+                        </p>
+
+                        <span>10:10 AM</span>
+
+                    </div>
+
+                    <div class="message ai">
+
+                        <p>
+
+                            Certainly! I'd be happy to help. Could you please provide your order ID?
+
+                        </p>
+
+                        <span>10:11 AM</span>
+
+                    </div>
+
+                    <div class="message customer">
+
+                        <p>
+
+                            Order ID: ORD458912
+
+                        </p>
+
+                        <span>10:12 AM</span>
+
+                    </div>
+
+                    <div class="message ai">
+
+                        <p>
+
+                            Thank you. I found your order. It is eligible for a return. Would you like me to initiate the return request?
+
+                        </p>
+
+                        <span>10:12 AM</span>
+
+                    </div>
+
+                </div>
+                <div class="message-box">
+
+                    <button>
+
+                        <i data-lucide="smile"></i>
+
+                    </button>
+
+                    <button>
+
+                        <i data-lucide="paperclip"></i>
+
+                    </button>
+
+                    <button>
+
+                        <i data-lucide="mic"></i>
+
+                    </button>
+
+                    <input
+                        type="text"
+                        placeholder="Type your message...">
+
+                    <button class="send-btn">
+
+                        <i data-lucide="send"></i>
+
+                    </button>
+
+                </div>
+
+            </section> 
+            <!-- RIGHT PANEL -->
+
+            <aside class="customer-panel">
+
+                <h3>Customer Details</h3>
+
+                <div class="customer-card">
+
+                    <img src="assets/avatars/avatar1.png" alt="">
+
+                    <h4>Sarah Johnson</h4>
+
+                    <p>Premium Customer</p>
+
+                </div>
+
+                <div class="info-box">
+
+                    <p><strong>Ticket ID:</strong> <span id="panelTicketId">No ticket yet</span></p>
+
+                    <p><strong>Priority:</strong> <span id="panelPriority">—</span></p>
+
+                    <p><strong>Status:</strong> <span id="panelStatus">—</span></p>
+
+                    <p><strong>Intent:</strong> <span id="panelIntent">—</span></p>
+
+                    <p><strong>Sentiment:</strong> <span id="panelSentiment">—</span></p>
+
+                    <p><strong>Escalation:</strong> <span id="panelEscalation">Not Required</span></p>
+
+                </div>
+
+                <div class="suggestions">
+
+                    <h4>Suggested Replies</h4>
+
+                    <button>Refund Policy</button>
+
+                    <button>Track Order</button>
+
+                    <button>Connect Human Agent</button>
+
+                </div>
+
+            </aside>
+
+        </section>
+        </main>
+
+    <script>
+
+        fetch("components/sidebar.html")
+            .then(response => response.text())
+            .then(data => {
+
+                document.getElementById("sidebar-container").innerHTML = data;
+
+                lucide.createIcons();
+
+            });
+
+    </script>
+
+    <script src="js/chat.js"></script>
+
+</body>
+
+</html>

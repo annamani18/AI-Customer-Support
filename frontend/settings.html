@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Settings | AI Customer Support Assistant</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/settings.css">
+<link rel="stylesheet" href="css/responsive.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+
+<div id="sidebar-container"></div>
+
+<main class="settings-page">
+<header class="settings-navbar">
+
+<div>
+
+<h1>Settings</h1>
+
+<p>Manage your AI Customer Support Assistant preferences.</p>
+
+</div>
+
+<div class="navbar-actions">
+
+<div class="search-box">
+
+<i data-lucide="search"></i>
+
+<input
+type="text"
+placeholder="Search settings">
+
+</div>
+
+<button class="icon-btn">
+
+<i data-lucide="bell"></i>
+
+</button>
+
+<button class="icon-btn">
+
+<i data-lucide="moon"></i>
+
+</button>
+
+<div class="profile">
+
+HM
+
+</div>
+
+</div>
+
+</header>
+<section class="profile-card">
+
+<div class="profile-avatar">
+
+HM
+
+</div>
+
+<div class="profile-info">
+
+<h2>Honey M</h2>
+
+<p>Administrator</p>
+
+<p>admin@supportai.com</p>
+
+</div>
+
+<button id="editProfile">
+
+<i data-lucide="user-pen"></i>
+
+Edit Profile
+
+</button>
+
+</section>
+<section class="settings-card">
+
+<h2>🤖 AI Configuration</h2>
+
+<div class="setting-row">
+
+<label>AI Model</label>
+
+<select id="aiModel">
+
+<option>Gemini 2.5 Flash</option>
+
+<option>Gemini 2.5 Pro</option>
+
+</select>
+
+</div>
+
+<div class="setting-row">
+
+<label>Response Creativity</label>
+
+<input type="range" min="0" max="100" value="70">
+
+</div>
+
+<div class="setting-row">
+
+<label>Confidence Threshold</label>
+
+<input type="range" min="50" max="100" value="90">
+
+</div>
+
+</section>
+<section class="settings-card">
+
+<h2>🔔 Notifications</h2>
+
+<div class="setting-row">
+
+<label>Email Notifications</label>
+
+<input type="checkbox" checked>
+
+</div>
+
+<div class="setting-row">
+
+<label>Push Notifications</label>
+
+<input type="checkbox" checked>
+
+</div>
+
+<div class="setting-row">
+
+<label>Weekly Reports</label>
+
+<input type="checkbox">
+
+</div>
+
+</section>
+<section class="settings-card">
+
+<h2>🎨 Appearance</h2>
+
+<div class="setting-row">
+
+<label>Theme</label>
+
+<select id="theme">
+
+<option>Light</option>
+
+<option>Dark</option>
+
+<option>System</option>
+
+</select>
+
+</div>
+
+<div class="setting-row">
+
+<label>Language</label>
+
+<select>
+
+<option>English</option>
+
+<option>Hindi</option>
+
+<option>Telugu</option>
+
+</select>
+
+</div>
+
+</section>
+<section class="settings-card">
+
+<h2>🔒 Security</h2>
+
+<div class="setting-buttons">
+
+<button id="changePassword">
+
+<i data-lucide="key-round"></i>
+
+Change Password
+
+</button>
+
+<button id="logout">
+
+<i data-lucide="log-out"></i>
+
+Logout
+
+</button>
+
+</div>
+
+</section>
+<section class="settings-card">
+
+<h2>ℹ️ About</h2>
+
+<p><strong>Application:</strong> AI Customer Support Assistant</p>
+
+<p><strong>Version:</strong> 1.0</p>
+
+<p><strong>Frontend:</strong> HTML, CSS, JavaScript</p>
+
+<p><strong>Backend:</strong> FastAPI</p>
+
+<p><strong>AI Model:</strong> Google Gemini</p>
+
+<p><strong>Database:</strong> MySQL</p>
+
+</section>
+</main>
+
+<script>
+
+fetch("components/sidebar.html")
+
+.then(response => response.text())
+
+.then(data => {
+
+document.getElementById("sidebar-container").innerHTML = data;
+
+lucide.createIcons();
+
+});
+
+</script>
+
+<script src="js/settings.js"></script>
+
+</body>
+
+</html>

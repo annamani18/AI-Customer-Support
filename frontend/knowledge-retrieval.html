@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Knowledge Retrieval | AI Customer Support Assistant</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/knowledge-retrieval.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+
+<div id="sidebar-container"></div>
+
+<main class="knowledge-page">
+<header class="knowledge-navbar">
+
+<div>
+
+<h1>Knowledge Retrieval</h1>
+
+<p>Retrieve relevant knowledge base articles using AI.</p>
+
+</div>
+
+<div class="navbar-actions">
+
+<div class="search-box">
+
+<i data-lucide="search"></i>
+
+<input
+type="text"
+placeholder="Search articles">
+
+</div>
+
+<button class="icon-btn">
+
+<i data-lucide="bell"></i>
+
+</button>
+
+<button class="icon-btn">
+
+<i data-lucide="moon"></i>
+
+</button>
+
+<div class="profile">
+
+HM
+
+</div>
+
+</div>
+
+</header>
+<section class="query-section">
+
+<div class="query-card">
+
+<h2>
+
+Customer Query
+
+</h2>
+
+<textarea
+id="customerQuery"
+rows="5">
+
+How do I return a damaged product?
+
+</textarea>
+
+<button id="retrieveBtn">
+
+<i data-lucide="database"></i>
+
+Retrieve Knowledge
+
+</button>
+
+</div>
+
+</section>
+<section class="knowledge-results">
+
+<h2>
+
+Retrieved Knowledge Base
+
+</h2>
+
+<div class="knowledge-card">
+
+<div class="card-header">
+
+<h3>📄 Return Policy</h3>
+
+<span>98% Match</span>
+
+</div>
+
+<p>
+
+Products can be returned within 30 days if they are damaged or defective.
+
+</p>
+
+</div>
+
+<div class="knowledge-card">
+
+<div class="card-header">
+
+<h3>📄 Refund Guidelines</h3>
+
+<span>95% Match</span>
+
+</div>
+
+<p>
+
+Refunds are processed within 5–7 business days after product inspection.
+
+</p>
+
+</div>
+
+<div class="knowledge-card">
+
+<div class="card-header">
+
+<h3>📄 Shipping Policy</h3>
+
+<span>92% Match</span>
+
+</div>
+
+<p>
+
+Customers should upload product images while requesting damaged item returns.
+
+</p>
+
+</div>
+
+</section>
+<section class="ai-response">
+
+<h2>
+
+🤖 AI Generated Response
+
+</h2>
+
+<div class="response-card">
+
+<p id="aiResponse">
+
+Based on our knowledge base, your damaged product is eligible for return within 30 days.
+
+Please upload clear images of the damaged item and your order ID.
+
+Once verified, your refund will be processed within 5–7 business days.
+
+</p>
+
+</div>
+
+</section>
+<section class="retrieval-stats">
+
+<div class="stat-card">
+
+<h3>Documents Retrieved</h3>
+
+<h2>3</h2>
+
+</div>
+
+<div class="stat-card">
+
+<h3>Average Confidence</h3>
+
+<h2>95%</h2>
+
+</div>
+
+<div class="stat-card">
+
+<h3>Response Time</h3>
+
+<h2>0.32s</h2>
+
+</div>
+
+<div class="stat-card">
+
+<h3>Knowledge Source</h3>
+
+<h2>Internal KB</h2>
+
+</div>
+
+</section>
+</main>
+
+<script>
+
+fetch("components/sidebar.html")
+
+.then(response=>response.text())
+
+.then(data=>{
+
+document.getElementById("sidebar-container").innerHTML=data;
+
+lucide.createIcons();
+
+});
+
+</script>
+
+<script src="js/knowledge-retrieval.js"></script>
+
+</body>
+
+</html>

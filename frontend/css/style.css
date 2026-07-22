@@ -1,0 +1,97 @@
+/* ==============================
+   GOOGLE FONTS
+============================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+/* ==============================
+   CSS VARIABLES
+============================== */
+
+:root{
+
+    --primary:#4F46E5;
+    --secondary:#7C3AED;
+    --accent:#06B6D4;
+
+    --success:#10B981;
+    --warning:#F59E0B;
+    --danger:#EF4444;
+
+    --background:#F8FAFC;
+    --surface:#FFFFFF;
+
+    --text:#1E293B;
+    --text-light:#64748B;
+
+    --border:#E2E8F0;
+
+    --shadow-sm:0 2px 8px rgba(0,0,0,.08);
+    --shadow-md:0 8px 24px rgba(0,0,0,.12);
+    --shadow-lg:0 16px 40px rgba(0,0,0,.15);
+
+    --radius-sm:8px;
+    --radius-md:12px;
+    --radius-lg:18px;
+
+    --transition:.3s ease;
+}
+
+/* ==============================
+   RESET
+============================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+    background:var(--background);
+    color:var(--text);
+
+}
+
+/* ==============================
+   TYPOGRAPHY
+============================== */
+
+h1,h2,h3,h4,h5{
+
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+button{
+
+    cursor:pointer;
+    border:none;
+    outline:none;
+
+}
+
+input{
+
+    outline:none;
+
+}
+
+img{
+
+    max-width:100%;
+    display:block;
+
+}

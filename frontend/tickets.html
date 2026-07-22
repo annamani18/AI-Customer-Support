@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tickets | AI Customer Support Assistant</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/tickets.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+
+    <main class="tickets-page">
+        <!-- ======================
+     TOP NAVBAR
+====================== -->
+
+<header class="tickets-navbar">
+
+    <div>
+
+        <h1>Ticket Management</h1>
+
+        <p>Monitor and manage customer support tickets.</p>
+
+    </div>
+
+    <div class="navbar-actions">
+
+        <div class="search-box">
+
+            <i data-lucide="search"></i>
+
+            <input
+                type="text"
+                placeholder="Search tickets...">
+
+        </div>
+
+        <button class="icon-btn">
+
+            <i data-lucide="bell"></i>
+
+        </button>
+
+        <button class="icon-btn">
+
+            <i data-lucide="moon"></i>
+
+        </button>
+
+        <div class="profile">
+
+            HM
+
+        </div>
+
+    </div>
+
+</header>
+<!-- ======================
+     KPI CARDS
+====================== -->
+
+<section class="ticket-stats">
+
+    <div class="ticket-card">
+
+        <h3>Total Tickets</h3>
+
+        <h2>248</h2>
+
+    </div>
+
+    <div class="ticket-card">
+
+        <h3>Open</h3>
+
+        <h2>86</h2>
+
+    </div>
+
+    <div class="ticket-card">
+
+        <h3>Resolved</h3>
+
+        <h2>142</h2>
+
+    </div>
+
+    <div class="ticket-card">
+
+        <h3>Escalated</h3>
+
+        <h2>20</h2>
+
+    </div>
+
+</section>
+<!-- ======================
+     FILTER BAR
+====================== -->
+
+<section class="filter-bar">
+
+    <select>
+
+        <option>Status</option>
+
+        <option>Open</option>
+
+        <option>Pending</option>
+
+        <option>Resolved</option>
+
+        <option>Escalated</option>
+
+    </select>
+
+    <select>
+
+        <option>Priority</option>
+
+        <option>High</option>
+
+        <option>Medium</option>
+
+        <option>Low</option>
+
+    </select>
+
+    <button class="create-ticket">
+
+        <i data-lucide="plus"></i>
+
+        Create Ticket
+
+    </button>
+
+</section>
+<!-- ======================
+     TICKET TABLE
+====================== -->
+
+<section class="ticket-table">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Ticket ID</th>
+
+                <th>Customer</th>
+
+                <th>Issue</th>
+
+                <th>Priority</th>
+
+                <th>Status</th>
+
+                <th>Assigned To</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+
+                <td>CS1023</td>
+
+                <td>Sarah Johnson</td>
+
+                <td>Refund Request</td>
+
+                <td><span class="high">High</span></td>
+
+                <td><span class="open">Open</span></td>
+
+                <td>AI Bot</td>
+
+                <td>
+
+                    <button><i data-lucide="eye"></i></button>
+
+                    <button><i data-lucide="square-pen"></i></button>
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>CS1024</td>
+
+                <td>David Miller</td>
+
+                <td>Login Issue</td>
+
+                <td><span class="medium">Medium</span></td>
+
+                <td><span class="pending">Pending</span></td>
+
+                <td>John</td>
+
+                <td>
+
+                    <button><i data-lucide="eye"></i></button>
+
+                    <button><i data-lucide="square-pen"></i></button>
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td>CS1025</td>
+
+                <td>Emma Wilson</td>
+
+                <td>Order Tracking</td>
+
+                <td><span class="low">Low</span></td>
+
+                <td><span class="resolved">Resolved</span></td>
+
+                <td>AI Bot</td>
+
+                <td>
+
+                    <button><i data-lucide="eye"></i></button>
+
+                    <button><i data-lucide="square-pen"></i></button>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</section>
+</main>
+
+    <script>
+
+        fetch("components/sidebar.html")
+            .then(response => response.text())
+            .then(data => {
+
+                document.getElementById("sidebar-container").innerHTML = data;
+
+                lucide.createIcons();
+
+            });
+
+    </script>
+
+    <script src="js/tickets.js"></script>
+
+</body>
+
+</html>

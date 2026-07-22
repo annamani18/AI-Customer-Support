@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Intent Detection | AI Customer Support Assistant</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/intent.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+
+<body>
+
+<div id="sidebar-container"></div>
+
+<main class="intent-page">
+    <header class="intent-navbar">
+
+    <div>
+
+        <h1>Intent Detection</h1>
+
+        <p>Analyze customer conversations using AI.</p>
+
+    </div>
+
+    <div class="navbar-actions">
+
+        <div class="search-box">
+
+            <i data-lucide="search"></i>
+
+            <input
+                type="text"
+                placeholder="Search analysis">
+
+        </div>
+
+        <button class="icon-btn">
+
+            <i data-lucide="bell"></i>
+
+        </button>
+
+        <button class="icon-btn">
+
+            <i data-lucide="moon"></i>
+
+        </button>
+
+        <div class="profile">
+
+            HM
+
+        </div>
+
+    </div>
+
+</header>
+<section class="message-section">
+
+    <div class="message-card">
+
+        <h2>
+
+            Customer Message
+
+        </h2>
+
+<textarea id="customerMessage" rows="5">
+
+I received the wrong product and I want a refund.
+
+</textarea>
+
+<button id="analyzeBtn">
+
+    <i data-lucide="brain"></i>
+
+    Analyze with AI
+
+</button>
+
+    </div>
+
+</section>
+<section class="results-grid">
+
+<div class="result-card">
+
+<h3>🎯 Detected Intent</h3>
+
+<h2 id="intentName">
+
+Refund Request
+
+</h2>
+
+</div>
+
+<div class="result-card">
+
+<h3>📊 Confidence</h3>
+
+<h2 id="confidence">
+
+98%
+
+</h2>
+
+</div>
+
+<div class="result-card">
+
+<h3>😊 Sentiment</h3>
+
+<h2 id="sentiment">
+
+Negative
+
+</h2>
+
+</div>
+
+<div class="result-card">
+
+<h3>⚡ Priority</h3>
+
+<h2 id="priority">
+
+High
+
+</h2>
+
+</div>
+
+</section>
+<section class="recommendation-grid">
+
+<div class="recommend-card">
+
+<h3>
+
+🤖 AI Recommendation
+
+</h3>
+
+<p>
+
+Process the refund immediately and notify the warehouse.
+
+</p>
+
+</div>
+
+<div class="recommend-card">
+
+<h3>
+
+📋 Suggested Action
+
+</h3>
+
+<p>
+
+Create a refund ticket and assign it to Billing Team.
+
+</p>
+
+</div>
+
+</section>
+<section class="history-card">
+
+<h2>
+
+Recent Intent History
+
+</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Customer</th>
+
+<th>Intent</th>
+
+<th>Confidence</th>
+
+<th>Priority</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>Sarah Johnson</td>
+
+<td>Refund</td>
+
+<td>98%</td>
+
+<td>High</td>
+
+</tr>
+
+<tr>
+
+<td>David Miller</td>
+
+<td>Password Reset</td>
+
+<td>96%</td>
+
+<td>Medium</td>
+
+</tr>
+
+<tr>
+
+<td>Emma Wilson</td>
+
+<td>Order Tracking</td>
+
+<td>99%</td>
+
+<td>Low</td>
+
+</tr>
+
+<tr>
+
+<td>John Carter</td>
+
+<td>Payment Failed</td>
+
+<td>95%</td>
+
+<td>High</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</section>
+</main>
+
+<script>
+
+fetch("components/sidebar.html")
+
+.then(response => response.text())
+
+.then(data=>{
+
+document.getElementById("sidebar-container").innerHTML=data;
+
+lucide.createIcons();
+
+});
+
+</script>
+
+<script src="js/intent.js"></script>
+
+</body>
+
+</html>

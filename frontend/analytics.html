@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Analytics Dashboard | AI Customer Support Assistant</title>
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/analytics.css">
+<link rel="stylesheet" href="css/responsive.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- Chart.js -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<div id="sidebar-container"></div>
+
+<main class="analytics-page">
+<header class="analytics-navbar">
+
+<div>
+
+<h1>Analytics Dashboard</h1>
+
+<p>Monitor AI performance and customer support metrics.</p>
+
+</div>
+
+<div class="navbar-actions">
+
+<div class="search-box">
+
+<i data-lucide="search"></i>
+
+<input
+type="text"
+placeholder="Search analytics">
+
+</div>
+
+<button class="icon-btn">
+
+<i data-lucide="bell"></i>
+
+</button>
+
+<button class="icon-btn">
+
+<i data-lucide="moon"></i>
+
+</button>
+
+<div class="profile">
+
+HM
+
+</div>
+
+</div>
+
+</header>
+<section class="analytics-cards">
+
+<div class="analytics-card">
+
+<h3>Total Tickets</h3>
+
+<h2>2,486</h2>
+
+<p>+12% this month</p>
+
+</div>
+
+<div class="analytics-card">
+
+<h3>Resolved Tickets</h3>
+
+<h2>2,130</h2>
+
+<p>85.6%</p>
+
+</div>
+
+<div class="analytics-card">
+
+<h3>AI Accuracy</h3>
+
+<h2>98.7%</h2>
+
+<p>Excellent</p>
+
+</div>
+
+<div class="analytics-card">
+
+<h3>Average Response</h3>
+
+<h2>18 sec</h2>
+
+<p>Fast</p>
+
+</div>
+
+<div class="analytics-card">
+
+<h3>CSAT</h3>
+
+<h2>4.9 / 5</h2>
+
+<p>★★★★★</p>
+
+</div>
+
+<div class="analytics-card">
+
+<h3>Active Chats</h3>
+
+<h2>126</h2>
+
+<p>Currently Live</p>
+
+</div>
+
+</section>
+<section class="charts-grid">
+
+<div class="chart-card">
+
+<h2>
+
+Monthly Ticket Trends
+
+</h2>
+
+<canvas id="ticketChart"></canvas>
+
+</div>
+
+<div class="chart-card">
+
+<h2>
+
+Ticket Categories
+
+</h2>
+
+<canvas id="categoryChart"></canvas>
+
+</div>
+
+</section>
+<section class="bottom-grid">
+
+<div class="chart-card">
+
+<h2>
+
+Sentiment Distribution
+
+</h2>
+
+<canvas id="sentimentChart"></canvas>
+
+</div>
+
+<div class="performance-card">
+
+<h2>
+
+🤖 AI Performance
+
+</h2>
+
+<div class="performance-item">
+
+<span>Intent Detection</span>
+
+<strong>98%</strong>
+
+</div>
+
+<div class="performance-item">
+
+<span>Knowledge Retrieval</span>
+
+<strong>96%</strong>
+
+</div>
+
+<div class="performance-item">
+
+<span>Sentiment Analysis</span>
+
+<strong>97%</strong>
+
+</div>
+
+<div class="performance-item">
+
+<span>Chat Response</span>
+
+<strong>99%</strong>
+
+</div>
+
+</div>
+
+</section>
+<section class="activity-card">
+
+<h2>
+
+Recent Activity
+
+</h2>
+
+<ul>
+
+<li>🟢 Refund Ticket #CS1023 resolved</li>
+
+<li>🔵 Knowledge retrieved for Order Tracking</li>
+
+<li>🟣 Intent detected: Password Reset</li>
+
+<li>🟠 Customer sentiment changed to Positive</li>
+
+<li>🟢 AI answered 142 conversations today</li>
+
+</ul>
+
+</section>
+</main>
+
+<script>
+
+fetch("components/sidebar.html")
+
+.then(response=>response.text())
+
+.then(data=>{
+
+document.getElementById("sidebar-container").innerHTML=data;
+
+lucide.createIcons();
+
+});
+
+</script>
+
+<script src="js/analytics.js"></script>
+
+</body>
+
+</html>

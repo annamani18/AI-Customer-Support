@@ -1,0 +1,395 @@
+/* ==========================================
+   ANALYTICS DASHBOARD
+========================================== */
+
+.analytics-page{
+    margin-left:270px;
+    min-height:100vh;
+    background:#F8FAFC;
+    padding:30px;
+}
+
+/* ==========================
+      NAVBAR
+========================== */
+
+.analytics-navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.analytics-navbar h1{
+    font-size:30px;
+    font-weight:700;
+    color:#1E293B;
+}
+
+.analytics-navbar p{
+    color:#64748B;
+    margin-top:6px;
+}
+
+.navbar-actions{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.search-box{
+    width:300px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:white;
+    padding:13px 18px;
+    border-radius:16px;
+    box-shadow:0 8px 20px rgba(0,0,0,.05);
+}
+
+.search-box input{
+    width:100%;
+    border:none;
+    background:transparent;
+    font-size:15px;
+}
+
+.icon-btn{
+    width:46px;
+    height:46px;
+    border:none;
+    border-radius:14px;
+    background:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    transition:.3s;
+    box-shadow:0 8px 20px rgba(0,0,0,.05);
+}
+
+.icon-btn:hover{
+    background:#4F46E5;
+    color:white;
+}
+
+.profile{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#4F46E5,#7C3AED);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:600;
+}
+/* ==========================
+      KPI CARDS
+========================== */
+
+.analytics-cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+}
+
+.analytics-card{
+
+    background:white;
+
+    padding:28px;
+
+    border-radius:20px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
+
+    transition:.35s;
+
+    cursor:pointer;
+
+}
+
+.analytics-card:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:0 18px 35px rgba(79,70,229,.15);
+
+}
+
+.analytics-card h3{
+
+    color:#64748B;
+
+    margin-bottom:10px;
+
+}
+
+.analytics-card h2{
+
+    font-size:34px;
+
+    color:#4F46E5;
+
+    margin-bottom:8px;
+
+}
+
+.analytics-card p{
+
+    color:#10B981;
+
+    font-weight:600;
+
+}
+/* ==========================
+      CHARTS
+========================== */
+
+.charts-grid{
+
+    display:grid;
+
+    grid-template-columns:2fr 1fr;
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+}
+
+.chart-card{
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:20px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
+
+    transition:.35s;
+
+}
+
+.chart-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.chart-card h2{
+
+    margin-bottom:20px;
+
+    color:#1E293B;
+
+}
+
+.chart-card canvas{
+
+    width:100% !important;
+
+    height:320px !important;
+
+}
+/* ==========================
+      PERFORMANCE
+========================== */
+
+.bottom-grid{
+
+    display:grid;
+
+    grid-template-columns:2fr 1fr;
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+}
+
+.performance-card{
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:20px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
+
+}
+
+.performance-card h2{
+
+    margin-bottom:25px;
+
+}
+
+.performance-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:15px 0;
+
+    border-bottom:1px solid #EEF2F7;
+
+}
+
+.performance-item:last-child{
+
+    border-bottom:none;
+
+}
+
+.performance-item strong{
+
+    color:#4F46E5;
+
+    font-size:18px;
+
+}
+
+/* ==========================
+      RECENT ACTIVITY
+========================== */
+
+.activity-card{
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:20px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
+
+}
+
+.activity-card h2{
+
+    margin-bottom:20px;
+
+}
+
+.activity-card ul{
+
+    list-style:none;
+
+}
+
+.activity-card li{
+
+    padding:15px 0;
+
+    border-bottom:1px solid #EEF2F7;
+
+    color:#475569;
+
+}
+
+.activity-card li:last-child{
+
+    border-bottom:none;
+
+}
+/* ==========================
+      ANIMATIONS
+========================== */
+
+.analytics-card,
+.chart-card,
+.performance-card,
+.activity-card{
+
+    animation:fadeIn .5s ease;
+
+}
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(15px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ==========================
+      RESPONSIVE
+========================== */
+
+@media(max-width:1100px){
+
+.analytics-cards{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+.charts-grid,
+.bottom-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+@media(max-width:768px){
+
+.analytics-page{
+
+margin-left:0;
+
+padding:20px;
+
+}
+
+.analytics-navbar{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+gap:20px;
+
+}
+
+.search-box{
+
+width:100%;
+
+}
+
+.analytics-cards{
+
+grid-template-columns:1fr;
+
+}
+
+}
