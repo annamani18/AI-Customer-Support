@@ -1,0 +1,37 @@
+{
+  "faq": [
+    {
+      "id": "1",
+      "keywords": ["refund", "return", "damaged"],
+      "question": "How do I return a damaged or unwanted product?",
+      "answer": "Your product is eligible for return within 30 days. Please upload product images and your order ID.",
+      "source": "Return Policy"
+    },
+    {
+      "id": "2",
+      "keywords": ["password", "login"],
+      "question": "How do I reset my password?",
+      "answer": "You can reset your password using the Forgot Password option on the login page.",
+      "source": "Account Help"
+    },
+    {
+      "id": "3",
+      "keywords": ["shipping", "delivery", "track"],
+      "question": "How do I track my order?",
+      "answer": "You can track your order using the tracking number sent to your email.",
+      "source": "Shipping Policy"
+    },
+    {
+      "id": "4",
+      "keywords": ["payment", "failed"],
+      "question": "What do I do if my payment fails?",
+      "answer": "It looks like your payment failed. Please verify your card details or try another payment method.",
+      "source": "Billing FAQ"
+    }
+  ],
+  "company_info": {
+    "name": "SupportAI",
+    "hours": "24/7",
+    "escalation_policy": "If a user is angry or their issue is not resolved after 2 attempts, escalate to a human agent."
+  }
+}

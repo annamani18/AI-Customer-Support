@@ -3,12 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
+import time
 import traceback
 
-import database
-from database import get_db, init_db, Conversation, Message, Ticket
-from classifier import classify, retrieve_answer
-from gemini_client import GeminiClient
+from database import get_db, init_db, Conversation, Message
+from chatbot.engine import ChatbotEngine
+from chatbot.classifier import classify
+from retrieval.retriever import KnowledgeRetriever
+from validators.input_validator import InputValidator
+from tickets import ticket_service
+from analytics import analytics_service
 
 init_db()
 
@@ -22,9 +26,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-gemini = GeminiClient()
-
-VALID_STATUSES = {"open", "pending", "resolved", "escalated"}
+engine = ChatbotEngine()
+retriever = KnowledgeRetriever()
 
 
 # ---------- Schemas ----------
@@ -32,6 +35,10 @@ VALID_STATUSES = {"open", "pending", "resolved", "escalated"}
 class ChatRequest(BaseModel):
     message: str
     conversation_id: Optional[str] = None
+
+
+class ClassifyRequest(BaseModel):
+    message: str
 
 
 class StatusUpdate(BaseModel):
@@ -43,7 +50,25 @@ class StatusUpdate(BaseModel):
 @app.post("/chat")
 async def handle_chat(payload: ChatRequest, db: Session = Depends(get_db)):
     try:
-        # 1. Get or create conversation
+        # Validator stage — reject bad input before it reaches the pipeline
+        is_valid, error_msg = InputValidator.validate_text(payload.message)
+        if not is_valid:
+            return {
+                "conversation_id": payload.conversation_id,
+                "reply": error_msg,
+                "sources": [],
+                "intent": "Invalid",
+                "category": "General",
+                "urgency": "low",
+                "sentiment": "neutral",
+                "sentiment_score": 0.5,
+                "emotion": "Calm",
+                "escalate": False,
+                "escalation_reason": None,
+                "ticket_id": None,
+            }
+
+        # Get or create conversation
         conv = None
         if payload.conversation_id:
             conv = db.query(Conversation).filter(Conversation.id == payload.conversation_id).first()
@@ -53,64 +78,25 @@ async def handle_chat(payload: ChatRequest, db: Session = Depends(get_db)):
             db.commit()
             db.refresh(conv)
 
-        # 2. History for context
         history = [{"role": m.role, "content": m.text} for m in conv.messages[-5:]]
 
-        # 3. Classify (fast, deterministic — always runs)
-        result = classify(payload.message)
+        # Full pipeline: Retrieval -> LLM -> Validator -> classification
+        result = await engine.get_ai_reply(payload.message, history)
 
-        # 4. Build a reply: try Gemini first, fall back to KB/canned response
-        kb_answer, kb_source = retrieve_answer(payload.message)
-        context = kb_answer or "No specific knowledge base match found. Use general support knowledge."
-
-        reply_text = await gemini.generate_reply(payload.message, context, history)
-        sources = []
-        if not reply_text:
-            if kb_answer:
-                reply_text = kb_answer
-                sources = [kb_source]
-            else:
-                reply_text = (
-                    "I'm not fully certain on that one — I've noted the details and, "
-                    "if needed, a support ticket will be created for a human follow-up."
-                )
-
-        # 5. Save messages
+        # Save messages
         db.add(Message(conversation_id=conv.id, role="customer", text=payload.message))
-        db.add(Message(conversation_id=conv.id, role="ai", text=reply_text))
+        db.add(Message(conversation_id=conv.id, role="ai", text=result["reply"]))
         db.commit()
 
-        # 6. Escalation -> create or update ticket for this conversation
+        # Ticket Database stage — create/update a ticket if escalation is needed
         ticket_id = None
         if result["escalate"]:
-            existing_ticket = db.query(Ticket).filter(Ticket.conversation_id == conv.id).first()
-            if existing_ticket:
-                existing_ticket.intent = result["intent"]
-                existing_ticket.category = result["category"]
-                existing_ticket.urgency = result["urgency"]
-                existing_ticket.sentiment = result["sentiment"]
-                existing_ticket.escalate = True
-                ticket_id = existing_ticket.id
-            else:
-                new_ticket = Ticket(
-                    conversation_id=conv.id,
-                    intent=result["intent"],
-                    category=result["category"],
-                    urgency=result["urgency"],
-                    sentiment=result["sentiment"],
-                    escalate=True,
-                    status="escalated",
-                )
-                db.add(new_ticket)
-                db.commit()
-                db.refresh(new_ticket)
-                ticket_id = new_ticket.id
-            db.commit()
+            ticket_id = ticket_service.create_or_update_ticket(db, conv.id, result)
 
         return {
             "conversation_id": conv.id,
-            "reply": reply_text,
-            "sources": sources,
+            "reply": result["reply"],
+            "sources": result["sources"],
             "intent": result["intent"],
             "category": result["category"],
             "urgency": result["urgency"],
@@ -127,68 +113,75 @@ async def handle_chat(payload: ChatRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ---------- /classify (Intent Detection + Sentiment Analysis pages) ----------
+
+@app.post("/classify")
+def classify_message(payload: ClassifyRequest):
+    result = classify(payload.message)
+    return result
+
+
+# ---------- /knowledge/search (Knowledge Retrieval page) ----------
+
+@app.post("/knowledge/search")
+def knowledge_search(payload: ClassifyRequest):
+    start = time.time()
+    answer, source = retriever.search(payload.message)
+    elapsed = round(time.time() - start, 2)
+
+    if answer:
+        return {
+            "answer": answer,
+            "source": source,
+            "documents_found": 1,
+            "confidence": "95%",
+            "response_time": f"{elapsed}s",
+        }
+    return {
+        "answer": "No specific match found in the knowledge base. Try rephrasing your query.",
+        "source": None,
+        "documents_found": 0,
+        "confidence": "0%",
+        "response_time": f"{elapsed}s",
+    }
+
+
 # ---------- /tickets ----------
 
 @app.get("/tickets")
-def list_tickets(db: Session = Depends(get_db)):
+def get_tickets(db: Session = Depends(get_db)):
     try:
-        tickets = db.query(Ticket).order_by(Ticket.created_at.desc()).all()
-        return [
-            {
-                "id": t.id,
-                "intent": t.intent,
-                "category": t.category,
-                "urgency": t.urgency,
-                "sentiment": t.sentiment,
-                "escalate": t.escalate,
-                "status": t.status,
-                "created_at": t.created_at.isoformat(),
-            }
-            for t in tickets
-        ]
+        return ticket_service.list_tickets(db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/tickets/{ticket_id}")
 def get_ticket(ticket_id: str, db: Session = Depends(get_db)):
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
-    if not ticket:
+    detail = ticket_service.get_ticket_detail(db, ticket_id)
+    if not detail:
         raise HTTPException(status_code=404, detail="Ticket not found")
-
-    messages = (
-        db.query(Message)
-        .filter(Message.conversation_id == ticket.conversation_id)
-        .order_by(Message.timestamp.asc())
-        .all()
-    )
-
-    return {
-        "id": ticket.id,
-        "status": ticket.status,
-        "category": ticket.category,
-        "urgency": ticket.urgency,
-        "intent": ticket.intent,
-        "sentiment": ticket.sentiment,
-        "messages": [{"role": m.role, "text": m.text} for m in messages],
-    }
+    return detail
 
 
 @app.patch("/tickets/{ticket_id}/status")
-def update_ticket_status(ticket_id: str, payload: StatusUpdate, db: Session = Depends(get_db)):
-    status = payload.status.strip().lower()
-    if status not in VALID_STATUSES:
-        raise HTTPException(status_code=422, detail=f"status must be one of {sorted(VALID_STATUSES)}")
-
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
-    if not ticket:
-        raise HTTPException(status_code=404, detail="Ticket not found")
-
-    ticket.status = status
-    db.commit()
-    db.refresh(ticket)
-
+def patch_ticket_status(ticket_id: str, payload: StatusUpdate, db: Session = Depends(get_db)):
+    ticket, error = ticket_service.update_status(db, ticket_id, payload.status)
+    if error == "Ticket not found":
+        raise HTTPException(status_code=404, detail=error)
+    if error:
+        raise HTTPException(status_code=422, detail=error)
     return {"id": ticket.id, "status": ticket.status}
+
+
+# ---------- /analytics/summary ----------
+
+@app.get("/analytics/summary")
+def get_analytics(db: Session = Depends(get_db)):
+    try:
+        return analytics_service.get_summary(db)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/")
