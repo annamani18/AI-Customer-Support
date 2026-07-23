@@ -103,3 +103,15 @@ intent detection.
 - Historical time-series data for the ticket-trend chart (currently
   illustrative — no monthly aggregation stored yet)
 - Real PDF/CSV export for the Reports page (currently a UI stub)
+
+## Team Contributions
+
+| Team Member | Role | Responsibilities |
+|-------------|------|------------------|
+| Annamani M | Project Lead & Full-Stack Developer | Designed the overall system architecture, developed the FastAPI backend, integrated the AI chatbot with Gemini, implemented knowledge retrieval, ticket management, analytics, API development, database integration, validation pipeline, testing, debugging, deployment, and GitHub repository management. |
+| pavan and deepthi| UI/UX Designer & Frontend Support | Assisted in designing the user interface, improved page layouts, reviewed user experience, suggested interface enhancements, and supported frontend styling consistency. |
+| lasya | Documentation & Quality Assurance | Assisted with project documentation, README preparation, feature validation, application testing, bug verification, and project presentation support. |
+
+### Collaboration
+
+This project was completed as a collaborative academic team project. Responsibilities were distributed across system development, interface design, documentation, testing, and project validation to ensure successful delivery.
