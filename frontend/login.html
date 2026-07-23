@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Log In | AI Customer Support Assistant</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+
+* { box-sizing: border-box; }
+
+body{
+    margin:0;
+    font-family:"Inter", sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#4F46E5,#7C3AED);
+}
+
+.auth-card{
+    background:white;
+    width:100%;
+    max-width:420px;
+    padding:40px;
+    border-radius:24px;
+    box-shadow:0 25px 60px rgba(0,0,0,.25);
+}
+
+.auth-logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:28px;
+}
+
+.auth-logo .icon{
+    font-size:32px;
+}
+
+.auth-logo h1{
+    font-size:20px;
+    margin:0;
+    color:#1E293B;
+}
+
+.auth-logo p{
+    margin:2px 0 0;
+    font-size:13px;
+    color:#64748B;
+}
+
+.tabs{
+    display:flex;
+    background:#F1F5F9;
+    border-radius:14px;
+    padding:4px;
+    margin-bottom:24px;
+}
+
+.tabs button{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:10px;
+    border-radius:10px;
+    font-weight:600;
+    color:#64748B;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.tabs button.active{
+    background:white;
+    color:#4F46E5;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+
+form{
+    display:none;
+    flex-direction:column;
+    gap:16px;
+}
+
+form.active{
+    display:flex;
+}
+
+label{
+    font-size:13px;
+    font-weight:600;
+    color:#334155;
+    margin-bottom:6px;
+    display:block;
+}
+
+input{
+    width:100%;
+    padding:13px 16px;
+    border:2px solid #E2E8F0;
+    border-radius:12px;
+    font-size:14px;
+    font-family:inherit;
+    transition:.2s;
+}
+
+input:focus{
+    outline:none;
+    border-color:#4F46E5;
+}
+
+button[type="submit"]{
+    margin-top:8px;
+    border:none;
+    padding:14px;
+    border-radius:14px;
+    background:linear-gradient(135deg,#4F46E5,#7C3AED);
+    color:white;
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:.2s;
+}
+
+button[type="submit"]:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 25px rgba(79,70,229,.3);
+}
+
+button[type="submit"]:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+    transform:none;
+}
+
+.error-msg{
+    background:#FEF2F2;
+    color:#DC2626;
+    padding:12px 16px;
+    border-radius:12px;
+    font-size:13px;
+    display:none;
+}
+
+.error-msg.show{
+    display:block;
+}
+
+.hint{
+    font-size:12px;
+    color:#94A3B8;
+    margin-top:-8px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="auth-card">
+
+    <div class="auth-logo">
+        <div class="icon">🤖</div>
+        <div>
+            <h1>SupportAI</h1>
+            <p>Customer Assistant</p>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button type="button" id="tabLogin" class="active">Log In</button>
+        <button type="button" id="tabSignup">Sign Up</button>
+    </div>
+
+    <div id="errorMsg" class="error-msg"></div>
+
+    <form id="loginForm" class="active">
+        <div>
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" required autocomplete="email">
+        </div>
+        <div>
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" required autocomplete="current-password">
+        </div>
+        <button type="submit" id="loginSubmit">
+            <i data-lucide="log-in"></i>
+            Log In
+        </button>
+    </form>
+
+    <form id="signupForm">
+        <div>
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" required autocomplete="email">
+        </div>
+        <div>
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" required autocomplete="new-password" minlength="8">
+            <p class="hint">At least 8 characters.</p>
+        </div>
+        <button type="submit" id="signupSubmit">
+            <i data-lucide="user-plus"></i>
+            Create Account
+        </button>
+    </form>
+
+</div>
+
+<script src="js/auth-guard.js"></script>
+<script src="js/login.js"></script>
+
+</body>
+
+</html>

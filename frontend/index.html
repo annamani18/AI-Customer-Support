@@ -19,6 +19,17 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+<script src="js/auth-guard.js"></script>
+
+<script>
+    // This page has no unique content of its own — if we got here
+    // (i.e. auth-guard.js didn't already redirect to login.html),
+    // it means we're logged in, so go straight to the dashboard.
+    if (window.SupportAIAuth && window.SupportAIAuth.getToken()) {
+        window.location.replace("dashboard.html");
+    }
+</script>
+
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components.css">
@@ -47,9 +58,6 @@
     </script>
 
     <script src="js/app.js"></script>
-
-
-<script src="js/app.js"></script>
 </body>
 
 </html>

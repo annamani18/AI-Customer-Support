@@ -6,13 +6,14 @@ from typing import Optional
 import time
 import traceback
 
-from database import get_db, init_db, Conversation, Message
+from database import get_db, init_db, Conversation, Message, User
 from chatbot.engine import ChatbotEngine
 from chatbot.classifier import classify
 from retrieval.retriever import KnowledgeRetriever
 from validators.input_validator import InputValidator
 from tickets import ticket_service
 from analytics import analytics_service
+from auth import hash_password, verify_password, create_access_token, get_current_user
 
 init_db()
 
@@ -45,10 +46,59 @@ class StatusUpdate(BaseModel):
     status: str
 
 
+class SignupRequest(BaseModel):
+    email: str
+    password: str
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+# ---------- /auth/signup ----------
+
+@app.post("/auth/signup")
+def signup(payload: SignupRequest, db: Session = Depends(get_db)):
+    email = payload.email.strip().lower()
+
+    if "@" not in email or "." not in email:
+        raise HTTPException(status_code=422, detail="Enter a valid email address.")
+
+    if len(payload.password) < 8:
+        raise HTTPException(status_code=422, detail="Password must be at least 8 characters.")
+
+    existing = db.query(User).filter(User.email == email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="An account with this email already exists.")
+
+    user = User(email=email, hashed_password=hash_password(payload.password))
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    token = create_access_token({"sub": user.id})
+    return {"access_token": token, "token_type": "bearer", "email": user.email}
+
+
+# ---------- /auth/login ----------
+
+@app.post("/auth/login")
+def login(payload: LoginRequest, db: Session = Depends(get_db)):
+    email = payload.email.strip().lower()
+
+    user = db.query(User).filter(User.email == email).first()
+    if not user or not verify_password(payload.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Incorrect email or password.")
+
+    token = create_access_token({"sub": user.id})
+    return {"access_token": token, "token_type": "bearer", "email": user.email}
+
+
 # ---------- /chat ----------
 
 @app.post("/chat")
-async def handle_chat(payload: ChatRequest, db: Session = Depends(get_db)):
+async def handle_chat(payload: ChatRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         # Validator stage — reject bad input before it reaches the pipeline
         is_valid, error_msg = InputValidator.validate_text(payload.message)
@@ -116,7 +166,7 @@ async def handle_chat(payload: ChatRequest, db: Session = Depends(get_db)):
 # ---------- /classify (Intent Detection + Sentiment Analysis pages) ----------
 
 @app.post("/classify")
-def classify_message(payload: ClassifyRequest):
+def classify_message(payload: ClassifyRequest, current_user: User = Depends(get_current_user)):
     result = classify(payload.message)
     return result
 
@@ -124,7 +174,7 @@ def classify_message(payload: ClassifyRequest):
 # ---------- /knowledge/search (Knowledge Retrieval page) ----------
 
 @app.post("/knowledge/search")
-def knowledge_search(payload: ClassifyRequest):
+def knowledge_search(payload: ClassifyRequest, current_user: User = Depends(get_current_user)):
     start = time.time()
     answer, source = retriever.search(payload.message)
     elapsed = round(time.time() - start, 2)
@@ -149,7 +199,7 @@ def knowledge_search(payload: ClassifyRequest):
 # ---------- /tickets ----------
 
 @app.get("/tickets")
-def get_tickets(db: Session = Depends(get_db)):
+def get_tickets(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         return ticket_service.list_tickets(db)
     except Exception as e:
@@ -157,7 +207,7 @@ def get_tickets(db: Session = Depends(get_db)):
 
 
 @app.get("/tickets/{ticket_id}")
-def get_ticket(ticket_id: str, db: Session = Depends(get_db)):
+def get_ticket(ticket_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     detail = ticket_service.get_ticket_detail(db, ticket_id)
     if not detail:
         raise HTTPException(status_code=404, detail="Ticket not found")
@@ -165,7 +215,7 @@ def get_ticket(ticket_id: str, db: Session = Depends(get_db)):
 
 
 @app.patch("/tickets/{ticket_id}/status")
-def patch_ticket_status(ticket_id: str, payload: StatusUpdate, db: Session = Depends(get_db)):
+def patch_ticket_status(ticket_id: str, payload: StatusUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     ticket, error = ticket_service.update_status(db, ticket_id, payload.status)
     if error == "Ticket not found":
         raise HTTPException(status_code=404, detail=error)
@@ -177,7 +227,7 @@ def patch_ticket_status(ticket_id: str, payload: StatusUpdate, db: Session = Dep
 # ---------- /analytics/summary ----------
 
 @app.get("/analytics/summary")
-def get_analytics(db: Session = Depends(get_db)):
+def get_analytics(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         return analytics_service.get_summary(db)
     except Exception as e:

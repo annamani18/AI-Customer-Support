@@ -22,6 +22,8 @@
 
 <script src="https://unpkg.com/lucide@latest"></script>
 
+<script src="js/auth-guard.js"></script>
+
 <!-- Chart.js -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -82,9 +84,9 @@ HM
 
 <h3>Total Tickets</h3>
 
-<h2>2,486</h2>
+<h2 id="statTotalTickets">—</h2>
 
-<p>+12% this month</p>
+<p id="statTotalTicketsSub">Loading…</p>
 
 </div>
 
@@ -92,19 +94,19 @@ HM
 
 <h3>Resolved Tickets</h3>
 
-<h2>2,130</h2>
+<h2 id="statResolved">—</h2>
 
-<p>85.6%</p>
+<p id="statResolvedSub">Loading…</p>
 
 </div>
 
 <div class="analytics-card">
 
-<h3>AI Accuracy</h3>
+<h3>AI Auto-Resolved</h3>
 
-<h2>98.7%</h2>
+<h2 id="statAutoResolved">—</h2>
 
-<p>Excellent</p>
+<p id="statAutoResolvedSub">Conversations closed without a ticket</p>
 
 </div>
 
@@ -112,9 +114,9 @@ HM
 
 <h3>Average Response</h3>
 
-<h2>18 sec</h2>
+<h2>N/A</h2>
 
-<p>Fast</p>
+<p>Not tracked yet</p>
 
 </div>
 
@@ -122,19 +124,19 @@ HM
 
 <h3>CSAT</h3>
 
-<h2>4.9 / 5</h2>
+<h2>N/A</h2>
 
-<p>★★★★★</p>
+<p>Not tracked yet</p>
 
 </div>
 
 <div class="analytics-card">
 
-<h3>Active Chats</h3>
+<h3>Open Tickets</h3>
 
-<h2>126</h2>
+<h2 id="statOpenTickets">—</h2>
 
-<p>Currently Live</p>
+<p>Currently open</p>
 
 </div>
 
@@ -145,7 +147,7 @@ HM
 
 <h2>
 
-Monthly Ticket Trends
+Monthly Ticket Trends <small style="font-weight:400;opacity:.6;">(demo data)</small>
 
 </h2>
 
@@ -184,7 +186,7 @@ Sentiment Distribution
 
 <h2>
 
-🤖 AI Performance
+🤖 AI Performance <small style="font-weight:400;opacity:.6;">(demo data)</small>
 
 </h2>
 

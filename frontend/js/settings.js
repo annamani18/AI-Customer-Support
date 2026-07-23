@@ -16,7 +16,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initializeButtons();
 
+    showLoggedInUser();
+
 });
+
+/* ==========================================
+   SHOW REAL LOGGED-IN USER
+========================================== */
+
+function showLoggedInUser(){
+
+    const emailEl = document.getElementById("profileEmail");
+
+    if(emailEl && window.SupportAIAuth){
+
+        const email = window.SupportAIAuth.getUserEmail();
+
+        if(email) emailEl.textContent = email;
+
+    }
+
+}
 /* ==========================================
    LUCIDE ICONS
 ========================================== */
@@ -97,7 +117,7 @@ function initializeButtons(){
 
             if(confirm("Are you sure you want to logout?")){
 
-                showToast("Logged out successfully.");
+                window.SupportAIAuth.logout();
 
             }
 

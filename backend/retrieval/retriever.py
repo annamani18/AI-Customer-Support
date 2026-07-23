@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 
 class KnowledgeRetriever:
@@ -15,11 +16,18 @@ class KnowledgeRetriever:
             print(f"Error loading knowledge base: {e}")
             return {"faq": [], "company_info": {}}
 
+    @staticmethod
+    def _contains(text: str, keyword: str) -> bool:
+        """Whole-word/phrase match so short keywords (e.g. 'hi') don't false-positive
+        inside unrelated words (e.g. 'this', 'which')."""
+        pattern = r"\b" + re.escape(keyword) + r"\b"
+        return re.search(pattern, text) is not None
+
     def search(self, query: str):
         """Returns (answer, source) for the best keyword match, or (None, None)."""
         text = query.lower()
         for item in self.knowledge_base.get("faq", []):
-            if any(k in text for k in item["keywords"]):
+            if any(self._contains(text, k) for k in item["keywords"]):
                 return item["answer"], item["source"]
         return None, None
 

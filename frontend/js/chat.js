@@ -175,7 +175,7 @@ function showTyping(customerText){
 
 function fetchAiReply(customerText){
 
-    return fetch(`${API_BASE_URL}/chat`, {
+    return window.SupportAIAuth.authFetch(`${API_BASE_URL}/chat`, {
 
         method: "POST",
 

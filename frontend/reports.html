@@ -22,6 +22,10 @@
 
 <script src="https://unpkg.com/lucide@latest"></script>
 
+<script src="js/auth-guard.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </head>
 
 <body>
@@ -76,31 +80,31 @@ HM
 
 <div class="report-card">
 
-<h3>Total Reports</h3>
+<h3>Total Tickets</h3>
 
-<h2>248</h2>
+<h2 id="statTotalTickets">—</h2>
 
-<p>Generated Successfully</p>
-
-</div>
-
-<div class="report-card">
-
-<h3>Today's Reports</h3>
-
-<h2>18</h2>
-
-<p>Updated Today</p>
+<p>All time</p>
 
 </div>
 
 <div class="report-card">
 
-<h3>AI Generated</h3>
+<h3>Tickets Today</h3>
 
-<h2>97%</h2>
+<h2 id="statTicketsToday">—</h2>
 
-<p>Automation Rate</p>
+<p>Created today</p>
+
+</div>
+
+<div class="report-card">
+
+<h3>AI Auto-Resolved</h3>
+
+<h2 id="statAutoResolvedPct">—</h2>
+
+<p>No ticket needed</p>
 
 </div>
 
@@ -108,9 +112,9 @@ HM
 
 <h3>Success Rate</h3>
 
-<h2>99.2%</h2>
+<h2 id="statSuccessRate">—</h2>
 
-<p>Excellent</p>
+<p>Tickets resolved</p>
 
 </div>
 

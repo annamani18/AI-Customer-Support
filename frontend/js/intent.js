@@ -1,17 +1,14 @@
 /* ==========================================
    AI CUSTOMER SUPPORT ASSISTANT
-   INTENT DETECTION
+   INTENT DETECTION (live, backed by /classify)
 ========================================== */
+
+const API_BASE_URL = "http://127.0.0.1:8000";
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Initialize Lucide Icons
     lucide.createIcons();
-
-    // Load Sidebar
     loadSidebar();
-
-    // Initialize Features
     initializeAnalyzer();
     initializeTheme();
     initializeNotifications();
@@ -25,207 +22,203 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function loadSidebar(){
 
-    const sidebar=document.getElementById("sidebar-container");
+    const sidebar = document.getElementById("sidebar-container");
 
     if(!sidebar) return;
 
     fetch("components/sidebar.html")
-    .then(response=>response.text())
-    .then(data=>{
-
-        sidebar.innerHTML=data;
-
+    .then(response => response.text())
+    .then(data => {
+        sidebar.innerHTML = data;
         lucide.createIcons();
-
     });
 
 }
+
 /* ==========================================
-      INTENT DATABASE
-========================================== */
-
-const intents=[
-
-{
-keyword:["refund","return","money"],
-intent:"Refund Request",
-confidence:"98%",
-sentiment:"Negative",
-priority:"High",
-recommendation:"Process refund immediately.",
-action:"Create Refund Ticket"
-},
-
-{
-keyword:["password","login","reset"],
-intent:"Password Reset",
-confidence:"97%",
-sentiment:"Neutral",
-priority:"Medium",
-recommendation:"Send password reset link.",
-action:"Reset User Password"
-},
-
-{
-keyword:["delivery","shipping","track"],
-intent:"Order Tracking",
-confidence:"96%",
-sentiment:"Neutral",
-priority:"Low",
-recommendation:"Share shipment status.",
-action:"Track Order"
-},
-
-{
-keyword:["payment","failed","transaction"],
-intent:"Payment Issue",
-confidence:"95%",
-sentiment:"Negative",
-priority:"High",
-recommendation:"Verify payment gateway.",
-action:"Create Billing Ticket"
-}
-
-];
-/* ==========================================
-      ANALYZE BUTTON
+   ANALYZE BUTTON
 ========================================== */
 
 function initializeAnalyzer(){
 
-const btn=document.getElementById("analyzeBtn");
+    const btn = document.getElementById("analyzeBtn");
 
-if(!btn) return;
+    if(!btn) return;
 
-btn.addEventListener("click",analyzeMessage);
+    btn.addEventListener("click", analyzeMessage);
 
 }
+
 /* ==========================================
-      ANALYZE MESSAGE
+   ANALYZE MESSAGE (calls the real backend)
 ========================================== */
 
 function analyzeMessage(){
 
-const message=document
-.getElementById("customerMessage")
-.value
-.toLowerCase();
+    const textarea = document.getElementById("customerMessage");
 
-let result=intents[0];
+    const message = textarea.value.trim();
 
-for(let item of intents){
+    if(!message){
+        showToast("Type a customer message first.");
+        return;
+    }
 
-if(item.keyword.some(word=>message.includes(word))){
+    const btn = document.getElementById("analyzeBtn");
+    const originalLabel = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<i data-lucide="loader"></i> Analyzing...`;
+    lucide.createIcons();
 
-result=item;
-
-break;
+    window.SupportAIAuth.authFetch(`${API_BASE_URL}/classify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+    })
+    .then(response => {
+        if(!response.ok) throw new Error(`Server responded with ${response.status}`);
+        return response.json();
+    })
+    .then(result => {
+        updateResults(result, message);
+        showToast("Intent analyzed successfully!");
+    })
+    .catch(error => {
+        console.error("Classification failed:", error);
+        showToast("Couldn't reach the AI backend. Is the server running?");
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalLabel;
+        lucide.createIcons();
+    });
 
 }
 
-}
-
-updateResults(result);
-
-}
 /* ==========================================
-      UPDATE UI
+   UPDATE UI WITH REAL RESULTS
 ========================================== */
 
-function updateResults(data){
+function updateResults(data, originalMessage){
 
-document.getElementById("intentName").textContent=data.intent;
+    document.getElementById("intentName").textContent = data.intent;
 
-document.getElementById("confidence").textContent=data.confidence;
+    // No numeric ML confidence exists in the backend, so this card
+    // now honestly shows the detected category instead of a fake %.
+    document.getElementById("confidence").textContent = data.category;
 
-document.getElementById("sentiment").textContent=data.sentiment;
+    document.getElementById("sentiment").textContent = capitalize(data.sentiment);
 
-document.getElementById("priority").textContent=data.priority;
+    document.getElementById("priority").textContent = capitalize(data.urgency);
 
-const cards=document.querySelectorAll(".recommend-card");
+    const recommendation = data.escalate
+        ? `This needs human attention — ${data.escalation_reason}.`
+        : `This can be safely handled by AI. Detected as a "${data.category.toLowerCase()}" issue with ${data.sentiment} sentiment.`;
 
-cards[0].querySelector("p").textContent=data.recommendation;
+    const action = data.escalate
+        ? `Escalate to a human agent and create a ${data.category} ticket.`
+        : `Continue automated resolution — no ticket needed.`;
 
-cards[1].querySelector("p").textContent=data.action;
+    document.getElementById("recommendationText").textContent = recommendation;
+    document.getElementById("actionText").textContent = action;
 
-showToast("Intent analyzed successfully!");
+    prependHistoryRow(originalMessage, data);
 
 }
+
 /* ==========================================
-      TOAST MESSAGE
+   PREPEND A REAL ROW TO RECENT HISTORY TABLE
+========================================== */
+
+function prependHistoryRow(message, data){
+
+    const tbody = document.querySelector(".history-card tbody");
+
+    if(!tbody) return;
+
+    const shortMsg = message.length > 24 ? message.slice(0, 24) + "…" : message;
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td>${shortMsg}</td>
+        <td>${data.intent}</td>
+        <td>${capitalize(data.sentiment)}</td>
+        <td>${capitalize(data.urgency)}</td>
+    `;
+
+    tbody.prepend(row);
+
+}
+
+/* ==========================================
+   TOAST MESSAGE
 ========================================== */
 
 function showToast(message){
 
-const toast=document.createElement("div");
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = message;
+    document.body.appendChild(toast);
 
-toast.className="toast";
-
-toast.textContent=message;
-
-document.body.appendChild(toast);
-
-setTimeout(()=>{
-
-toast.classList.add("show");
-
-},100);
-
-setTimeout(()=>{
-
-toast.remove();
-
-},3000);
+    setTimeout(() => { toast.classList.add("show"); }, 100);
+    setTimeout(() => { toast.remove(); }, 3000);
 
 }
+
 /* ==========================================
-      THEME
+   HELPERS
+========================================== */
+
+function capitalize(str){
+    if(!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/* ==========================================
+   THEME
 ========================================== */
 
 function initializeTheme(){
 
-const buttons=document.querySelectorAll(".icon-btn");
+    const buttons = document.querySelectorAll(".icon-btn");
 
-if(buttons.length<2) return;
+    if(buttons.length < 2) return;
 
-buttons[1].addEventListener("click",()=>{
-
-document.body.classList.toggle("dark");
-
-});
+    buttons[1].addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+    });
 
 }
+
 /* ==========================================
-      NOTIFICATION
+   NOTIFICATIONS
 ========================================== */
 
 function initializeNotifications(){
 
-const buttons=document.querySelectorAll(".icon-btn");
+    const buttons = document.querySelectorAll(".icon-btn");
 
-if(buttons.length===0) return;
+    if(buttons.length === 0) return;
 
-buttons[0].addEventListener("click",()=>{
-
-alert("No new notifications.");
-
-});
+    buttons[0].addEventListener("click", () => {
+        showToast("No new notifications.");
+    });
 
 }
+
 /* ==========================================
-      PROFILE
+   PROFILE
 ========================================== */
 
 function initializeProfile(){
 
-const profile=document.querySelector(".profile");
+    const profile = document.querySelector(".profile");
 
-if(!profile) return;
+    if(!profile) return;
 
-profile.addEventListener("click",()=>{
-
-alert("Profile settings coming soon.");
-
-});
+    profile.addEventListener("click", () => {
+        showToast("Profile settings coming soon.");
+    });
 
 }

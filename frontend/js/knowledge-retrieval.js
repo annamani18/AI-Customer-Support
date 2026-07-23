@@ -2,6 +2,10 @@
    KNOWLEDGE RETRIEVAL
 ========================================== */
 
+// If your AI Chat page's JS points at a different backend URL/port,
+// change this constant to match it exactly.
+const API_BASE_URL = "http://127.0.0.1:8000";
+
 document.addEventListener("DOMContentLoaded", () => {
 
     lucide.createIcons();
@@ -41,69 +45,6 @@ function loadSidebar(){
 
 }
 /* ==========================================
-   KNOWLEDGE BASE
-========================================== */
-
-const knowledgeBase=[
-
-{
-
-keyword:["refund","return","damaged"],
-
-response:"Your product is eligible for return within 30 days. Please upload product images and your order ID.",
-
-documents:3,
-
-confidence:"98%",
-
-time:"0.31s"
-
-},
-
-{
-
-keyword:["password","login"],
-
-response:"You can reset your password using the Forgot Password option on the login page.",
-
-documents:2,
-
-confidence:"97%",
-
-time:"0.27s"
-
-},
-
-{
-
-keyword:["shipping","delivery","track"],
-
-response:"You can track your order using the tracking number sent to your email.",
-
-documents:4,
-
-confidence:"96%",
-
-time:"0.29s"
-
-},
-
-{
-
-keyword:["payment","failed"],
-
-response:"Your payment failed. Please verify your card details or try another payment method.",
-
-documents:3,
-
-confidence:"95%",
-
-time:"0.34s"
-
-}
-
-];
-/* ==========================================
    BUTTON
 ========================================== */
 
@@ -117,60 +58,117 @@ button.addEventListener("click",retrieveKnowledge);
 
 }
 /* ==========================================
-   RETRIEVE
+   RETRIEVE (live backend call)
 ========================================== */
 
-function retrieveKnowledge(){
+async function retrieveKnowledge(){
 
-const query=document
+    const queryInput=document.getElementById("customerQuery");
+    const query=queryInput.value.trim();
 
-.getElementById("customerQuery")
+    if(!query){
+        showToast("Please enter a query first");
+        return;
+    }
 
-.value
+    const button=document.getElementById("retrieveBtn");
+    const originalLabel=button.innerHTML;
+    button.disabled=true;
+    button.innerHTML="<i data-lucide=\"loader\"></i> Retrieving...";
+    lucide.createIcons();
 
-.toLowerCase();
+    try{
 
-let result=knowledgeBase[0];
+        const response=await window.SupportAIAuth.authFetch(`${API_BASE_URL}/knowledge/search`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({message:query})
+        });
 
-for(let item of knowledgeBase){
+        if(!response.ok){
+            throw new Error(`Server responded with ${response.status}`);
+        }
 
-if(item.keyword.some(word=>query.includes(word))){
+        const data=await response.json();
 
-result=item;
+        renderResults(data);
 
-break;
+        showToast(
+            data.documents_found>0
+                ?"Knowledge Retrieved Successfully"
+                :"No matching article found"
+        );
 
-}
+    }catch(err){
 
-}
+        console.error("Knowledge retrieval failed:",err);
+        showToast("Couldn't reach the backend. Is it running?");
 
-updateResponse(result);
+    }finally{
+
+        button.disabled=false;
+        button.innerHTML=originalLabel;
+        lucide.createIcons();
+
+    }
 
 }
 /* ==========================================
-   UPDATE UI
+   RENDER RESULTS (from live API response)
 ========================================== */
 
-function updateResponse(data){
+function renderResults(data){
 
-document.getElementById("aiResponse").textContent=data.response;
+    const container=document.getElementById("knowledgeCardsContainer");
+    container.innerHTML="";
 
-const cards=document.querySelectorAll(".stat-card h2");
+    if(data.documents_found>0 && data.source){
 
-cards[0].textContent=data.documents;
+        const card=document.createElement("div");
+        card.className="knowledge-card";
+        card.innerHTML=`
+            <div class="card-header">
+                <h3>📄 ${escapeHtml(data.source)}</h3>
+                <span>${escapeHtml(data.confidence)} Match</span>
+            </div>
+            <p>${escapeHtml(data.answer)}</p>
+        `;
+        container.appendChild(card);
 
-cards[1].textContent=data.confidence;
+    }else{
 
-cards[2].textContent=data.time;
+        const empty=document.createElement("div");
+        empty.className="knowledge-card";
+        empty.innerHTML=`
+            <div class="card-header">
+                <h3>No articles found</h3>
+            </div>
+            <p>Try rephrasing your query — no matching knowledge base entry was found.</p>
+        `;
+        container.appendChild(empty);
 
-cards[3].textContent="Internal KB";
+    }
 
-showToast("Knowledge Retrieved Successfully");
+    document.getElementById("aiResponse").textContent=data.answer;
+
+    document.getElementById("statDocuments").textContent=data.documents_found;
+    document.getElementById("statConfidence").textContent=data.confidence;
+    document.getElementById("statResponseTime").textContent=data.response_time;
+    document.getElementById("statSource").textContent=data.source||"No match";
 
 }
 /* ==========================================
-   TOAST
+   UTILITIES
 ========================================== */
+
+function escapeHtml(str){
+    if(str===null||str===undefined) return "";
+    const div=document.createElement("div");
+    div.textContent=String(str);
+    return div.innerHTML;
+}
 
 function showToast(message){
 
@@ -195,9 +193,6 @@ toast.remove();
 },3000);
 
 }
-/* ==========================================
-   UTILITIES
-========================================== */
 
 function initializeTheme(){
 

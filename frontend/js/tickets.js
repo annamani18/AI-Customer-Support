@@ -45,7 +45,7 @@ function loadSidebar(){
 
 function loadTickets(){
 
-    fetch(`${API_BASE_URL}/tickets`)
+    window.SupportAIAuth.authFetch(`${API_BASE_URL}/tickets`)
     .then(response => {
 
         if(!response.ok) throw new Error(`Server responded with ${response.status}`);
@@ -172,7 +172,7 @@ function ticketRow(t){
 
 function viewTicket(ticketId){
 
-    fetch(`${API_BASE_URL}/tickets/${ticketId}`)
+    window.SupportAIAuth.authFetch(`${API_BASE_URL}/tickets/${ticketId}`)
     .then(response => {
 
         if(!response.ok) throw new Error(`Server responded with ${response.status}`);
@@ -218,7 +218,7 @@ function editTicketStatus(ticketId){
 
     }
 
-    fetch(`${API_BASE_URL}/tickets/${ticketId}/status`, {
+    window.SupportAIAuth.authFetch(`${API_BASE_URL}/tickets/${ticketId}/status`, {
 
         method: "PATCH",
 

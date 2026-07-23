@@ -9,7 +9,7 @@
     },
     {
       "id": "2",
-      "keywords": ["password", "login"],
+      "keywords": ["password", "forgot my password", "reset password"],
       "question": "How do I reset my password?",
       "answer": "You can reset your password using the Forgot Password option on the login page.",
       "source": "Account Help"
@@ -27,6 +27,34 @@
       "question": "What do I do if my payment fails?",
       "answer": "It looks like your payment failed. Please verify your card details or try another payment method.",
       "source": "Billing FAQ"
+    },
+    {
+      "id": "5",
+      "keywords": ["change my email", "change email", "update my email", "email address"],
+      "question": "How do I change my email address?",
+      "answer": "Go to Account Settings > Profile > Email, enter your new address, and confirm it via the verification link we send you.",
+      "source": "Account Help"
+    },
+    {
+      "id": "6",
+      "keywords": ["account locked", "locked out"],
+      "question": "My account is locked, how do I unlock it?",
+      "answer": "Accounts lock after repeated failed logins. Use the Forgot Password link to reset your credentials and automatically unlock your account.",
+      "source": "Account Help"
+    },
+    {
+      "id": "7",
+      "keywords": ["crash", "crashes", "crashed", "error when i log in", "site is down"],
+      "question": "The website crashes or errors when I try to log in",
+      "answer": "Try clearing your browser cache/cookies or logging in from a private/incognito window. If the crash continues, let us know your browser and device so we can investigate further.",
+      "source": "Technical Support"
+    },
+    {
+      "id": "8",
+      "keywords": ["hello", "hi", "hey"],
+      "question": "Greeting",
+      "answer": "Hi! I'm your AI support assistant. I can help with orders, billing, account access, and technical issues — what do you need help with?",
+      "source": "Welcome"
     }
   ],
   "company_info": {
