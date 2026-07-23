@@ -2,7 +2,7 @@
    ANALYTICS DASHBOARD (live, backed by /analytics/summary)
 ========================================== */
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "https://ai-customer-support-backend-pard.onrender.com";
 
 let categoryChartInstance = null;
 let sentimentChartInstance = null;

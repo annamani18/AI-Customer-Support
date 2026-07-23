@@ -70,7 +70,7 @@ chatbot still replies sensibly.
 uvicorn main:app --reload --port 8000
 ```
 
-Visit `http://127.0.0.1:8000/docs` for interactive API docs.
+Visit `https://ai-customer-support-backend-pard.onrender.com` for interactive API docs.
 
 Point your frontend's `API_BASE_URL` at this address — it already is, in
 `chat.js`, `ticket.js`, `intent.js`, `sentiment.js`, `knowledge-retrieval.js`,

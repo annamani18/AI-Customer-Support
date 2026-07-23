@@ -4,7 +4,7 @@
 ========================================== */
 
 // Point this at your backend. Change for deployment.
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "https://ai-customer-support-backend-pard.onrender.com";
 
 // Keeps the backend's conversation_id so replies stay in context.
 let currentConversationId = null;
