@@ -2,6 +2,8 @@
    SETTINGS MODULE
 ========================================== */
 
+const API_BASE_URL = "https://ai-customer-support-backend-pard.onrender.com";
+
 document.addEventListener("DOMContentLoaded", () => {
 
     initializeLucide();
@@ -26,15 +28,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function showLoggedInUser(){
 
+    if(!window.SupportAIAuth) return;
+
+    window.SupportAIAuth.getCurrentUser().then(user => {
+
+        if(!user){
+            const nameEl = document.getElementById("profileName");
+            if(nameEl) nameEl.textContent = "Couldn't load profile";
+            console.error("Couldn't load the logged-in user — check that the backend is deployed with /auth/me and that you're logged in.");
+            return;
+        }
+
+        applyUserToProfileCard(user);
+
+    });
+
+}
+
+function applyUserToProfileCard(user){
+
     const emailEl = document.getElementById("profileEmail");
+    if(emailEl) emailEl.textContent = user.email;
 
-    if(emailEl && window.SupportAIAuth){
+    const nameEl = document.getElementById("profileName");
+    if(nameEl) nameEl.textContent = user.name;
 
-        const email = window.SupportAIAuth.getUserEmail();
+    const roleEl = document.getElementById("profileRole");
+    if(roleEl) roleEl.textContent = user.role;
 
-        if(email) emailEl.textContent = email;
-
-    }
+    const avatarEl = document.getElementById("profileAvatar");
+    if(avatarEl) avatarEl.textContent = user.initials;
 
 }
 /* ==========================================
@@ -80,6 +103,45 @@ function loadSidebar(){
 
 }
 /* ==========================================
+   EDIT PROFILE (real, saves to the database)
+========================================== */
+
+function editProfile(){
+
+    window.SupportAIAuth.getCurrentUser().then(user => {
+
+        const currentName = user ? user.name : "";
+        const currentRole = user ? user.role : "";
+
+        const newName = prompt("Your name:", currentName || "");
+        if(newName === null) return; // cancelled
+
+        const newRole = prompt("Your role/title:", currentRole || "");
+        if(newRole === null) return; // cancelled
+
+        window.SupportAIAuth.authFetch(`${API_BASE_URL}/auth/me`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: newName.trim(), role: newRole.trim() })
+        })
+        .then(response => {
+            if(!response.ok) throw new Error(`Server responded with ${response.status}`);
+            return response.json();
+        })
+        .then(updatedUser => {
+            applyUserToProfileCard(updatedUser);
+            window.SupportAIAuth.refreshCurrentUser();
+            showToast("Profile updated.");
+        })
+        .catch(error => {
+            console.error("Profile update failed:", error);
+            showToast("Couldn't save your profile — please try again.");
+        });
+
+    });
+
+}
+/* ==========================================
    BUTTONS
 ========================================== */
 
@@ -95,7 +157,7 @@ function initializeButtons(){
 
         edit.addEventListener("click",()=>{
 
-            showToast("Profile editor coming soon.");
+            editProfile();
 
         });
 

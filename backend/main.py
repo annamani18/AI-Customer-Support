@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
+import re
 import time
 import traceback
 
@@ -49,11 +50,42 @@ class StatusUpdate(BaseModel):
 class SignupRequest(BaseModel):
     email: str
     password: str
+    name: Optional[str] = None
 
 
 class LoginRequest(BaseModel):
     email: str
     password: str
+
+
+class ProfileUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    role: Optional[str] = None
+
+
+class EscalateRequest(BaseModel):
+    conversation_id: str
+    reason: Optional[str] = None
+
+
+def _derive_display_name(email: str) -> str:
+    """The User table only stores an email (no name field), so a real
+    display name is derived from the email's local part instead of
+    showing a hardcoded placeholder like 'Sarah Johnson'."""
+    local_part = email.split("@")[0]
+    words = [w for w in re.split(r"[._\-+0-9]+", local_part) if w]
+    if not words:
+        return local_part.capitalize()
+    return " ".join(w.capitalize() for w in words)
+
+
+def _derive_initials(name: str) -> str:
+    words = name.split()
+    if not words:
+        return "U"
+    if len(words) == 1:
+        return words[0][:2].upper()
+    return (words[0][0] + words[-1][0]).upper()
 
 
 # ---------- /auth/signup ----------
@@ -72,7 +104,15 @@ def signup(payload: SignupRequest, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(status_code=400, detail="An account with this email already exists.")
 
-    user = User(email=email, hashed_password=hash_password(payload.password))
+    is_first_user = db.query(User).count() == 0
+
+    user = User(
+        email=email,
+        hashed_password=hash_password(payload.password),
+        name=(payload.name.strip() if payload.name else None),
+        role="Administrator" if is_first_user else "Support Agent",
+        is_admin=is_first_user,
+    )
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -93,6 +133,67 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
     token = create_access_token({"sub": user.id})
     return {"access_token": token, "token_type": "bearer", "email": user.email}
+
+
+# ---------- /auth/me ----------
+
+@app.get("/auth/me")
+def get_me(current_user: User = Depends(get_current_user)):
+    name = current_user.name or _derive_display_name(current_user.email)
+    role = current_user.role or "Support Agent"
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "name": name,
+        "role": role,
+        "initials": _derive_initials(name),
+        "is_admin": bool(current_user.is_admin),
+    }
+
+
+@app.put("/auth/me")
+def update_me(payload: ProfileUpdateRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if payload.name is not None:
+        cleaned = payload.name.strip()
+        current_user.name = cleaned or None
+    if payload.role is not None:
+        cleaned_role = payload.role.strip()
+        current_user.role = cleaned_role or "Support Agent"
+
+    db.commit()
+    db.refresh(current_user)
+
+    name = current_user.name or _derive_display_name(current_user.email)
+    role = current_user.role or "Support Agent"
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "name": name,
+        "role": role,
+        "initials": _derive_initials(name),
+        "is_admin": bool(current_user.is_admin),
+    }
+
+
+# ---------- /admin/users ----------
+
+@app.get("/admin/users")
+def list_users(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required.")
+
+    users = db.query(User).order_by(User.created_at.desc()).all()
+    return [
+        {
+            "id": u.id,
+            "email": u.email,
+            "name": u.name or _derive_display_name(u.email),
+            "role": u.role or "Support Agent",
+            "is_admin": bool(u.is_admin),
+            "created_at": u.created_at.isoformat() if u.created_at else None,
+        }
+        for u in users
+    ]
 
 
 # ---------- /chat ----------
@@ -222,6 +323,32 @@ def patch_ticket_status(ticket_id: str, payload: StatusUpdate, db: Session = Dep
     if error:
         raise HTTPException(status_code=422, detail=error)
     return {"id": ticket.id, "status": ticket.status}
+
+
+# ---------- /tickets/escalate (manual "Connect me to a human agent") ----------
+
+@app.post("/tickets/escalate")
+def escalate_conversation(payload: EscalateRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    conv = db.query(Conversation).filter(Conversation.id == payload.conversation_id).first()
+    if not conv:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+
+    classification = {
+        "intent": "Human Agent Requested",
+        "category": "General",
+        "urgency": "high",
+        "sentiment": "neutral",
+    }
+    ticket_id = ticket_service.create_or_update_ticket(db, conv.id, classification)
+    ticket, error = ticket_service.update_status(db, ticket_id, "escalated")
+    if error:
+        raise HTTPException(status_code=500, detail=error)
+
+    return {
+        "ticket_id": ticket_id,
+        "status": "escalated",
+        "message": "A human agent has been requested for this conversation.",
+    }
 
 
 # ---------- /analytics/summary ----------

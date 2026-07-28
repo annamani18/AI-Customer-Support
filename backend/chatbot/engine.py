@@ -89,25 +89,26 @@ class ChatbotEngine:
         # 1. Classify (intent / sentiment / urgency / escalation)
         result = classify(message)
 
-        # 2. Retrieval Layer — build context from the knowledge base
+        # 2. Retrieval Layer — search the knowledge base FIRST
         context = self.retriever.build_context(message)
         kb_answer, kb_source = self.retriever.search(message)
 
-        # 3. LLM — try Gemini first
-        reply_text = await self.gemini.generate_reply(message, context, history)
         sources = []
-        used_gemini = bool(reply_text)
 
-        # 4. Fallback if LLM unavailable/failed
-        if not reply_text:
-            if kb_answer:
-                reply_text = kb_answer
-                sources = [kb_source]
-            else:
+        if kb_answer:
+            # 3a. KB match found — use it directly, no LLM call needed
+            reply_text = kb_answer
+            sources = [kb_source]
+            used_gemini = False
+        else:
+            # 3b. No KB match — fall back to Gemini
+            reply_text = await self.gemini.generate_reply(message, context, history)
+            used_gemini = bool(reply_text)
+
+            # 4. Final fallback if both KB and Gemini come up empty
+            if not reply_text:
                 # Dynamic, intent-aware fallback instead of one static sentence
                 reply_text = _build_dynamic_fallback(message, result)
-        elif kb_answer:
-            sources = [kb_source]
 
         # 5. Validator — sanitize/guarantee a safe, non-empty reply
         reply_text = InputValidator.validate_reply(reply_text)

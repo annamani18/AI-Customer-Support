@@ -1,6 +1,9 @@
 /* ==========================================
-   SENTIMENT ANALYSIS
+   AI CUSTOMER SUPPORT ASSISTANT
+   SENTIMENT ANALYSIS (live, backed by /classify)
 ========================================== */
+
+const API_BASE_URL = "https://ai-customer-support-backend-pard.onrender.com";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -41,68 +44,7 @@ function loadSidebar(){
 
 }
 /* ==========================================
-   SENTIMENT DATABASE
-========================================== */
-
-const sentiments=[
-
-{
-
-keywords:["thank","great","awesome","excellent","love"],
-
-sentiment:"Positive 😊",
-
-confidence:"99%",
-
-priority:"Low",
-
-emotion:"Happy",
-
-recommendation:"Customer is satisfied. Thank them and close the conversation.",
-
-action:"Send Thank You Message"
-
-},
-
-{
-
-keywords:["okay","fine","information","status"],
-
-sentiment:"Neutral 😐",
-
-confidence:"96%",
-
-priority:"Medium",
-
-emotion:"Calm",
-
-recommendation:"Provide accurate information and continue assisting the customer.",
-
-action:"Share Requested Information"
-
-},
-
-{
-
-keywords:["refund","angry","disappointed","late","damaged","worst","terrible"],
-
-sentiment:"Negative 😟",
-
-confidence:"98%",
-
-priority:"High",
-
-emotion:"Frustrated",
-
-recommendation:"Respond with empathy and prioritize the issue immediately.",
-
-action:"Escalate to Senior Support"
-
-}
-
-];
-/* ==========================================
-   ANALYZE BUTTON
+   ANALYZE BUTTON (calls the real backend)
 ========================================== */
 
 function initializeAnalyzer(){
@@ -114,56 +56,72 @@ function initializeAnalyzer(){
     button.addEventListener("click",analyzeSentiment);
 
 }
-/* ==========================================
-   ANALYZE SENTIMENT
-========================================== */
 
 function analyzeSentiment(){
 
-    const message=document
+    const message=document.getElementById("customerMessage").value.trim();
 
-    .getElementById("customerMessage")
-
-    .value
-
-    .toLowerCase();
-
-    let result=sentiments[1];
-
-    for(let item of sentiments){
-
-        if(item.keywords.some(word=>message.includes(word))){
-
-            result=item;
-
-            break;
-
-        }
-
+    if(!message){
+        showToast("Type a customer message first.");
+        return;
     }
 
-    updateResults(result);
+    const button=document.getElementById("analyzeSentiment");
+    const originalLabel=button.innerHTML;
+    button.disabled=true;
+    button.innerHTML=`<i data-lucide="loader"></i> Analyzing...`;
+    lucide.createIcons();
+
+    window.SupportAIAuth.authFetch(`${API_BASE_URL}/classify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+    })
+    .then(response => {
+        if(!response.ok) throw new Error(`Server responded with ${response.status}`);
+        return response.json();
+    })
+    .then(data => {
+        updateResults(data);
+        showToast("Sentiment analysis completed successfully!");
+    })
+    .catch(error => {
+        console.error("Sentiment analysis failed:", error);
+        showToast("Couldn't reach the AI backend. Is the server running?");
+    })
+    .finally(() => {
+        button.disabled=false;
+        button.innerHTML=originalLabel;
+        lucide.createIcons();
+    });
 
 }
 /* ==========================================
-   UPDATE RESULTS
+   UPDATE RESULTS WITH REAL BACKEND DATA
 ========================================== */
 
 function updateResults(data){
 
-    document.getElementById("sentimentResult").textContent=data.sentiment;
+    const sentimentEmoji = { positive: "😊", neutral: "😐", negative: "😟" };
 
-    document.getElementById("confidenceResult").textContent=data.confidence;
+    document.getElementById("sentimentResult").textContent =
+        `${capitalize(data.sentiment)} ${sentimentEmoji[data.sentiment] || ""}`;
 
-    document.getElementById("priorityResult").textContent=data.priority;
+    // No numeric ML confidence exists in the backend, so this honestly
+    // shows the detected category instead of a fabricated percentage.
+    document.getElementById("confidenceResult").textContent = data.category;
 
-    document.getElementById("emotionResult").textContent=data.emotion;
+    document.getElementById("priorityResult").textContent = capitalize(data.urgency);
 
-    document.getElementById("recommendationText").textContent=data.recommendation;
+    document.getElementById("emotionResult").textContent = data.emotion;
 
-    document.getElementById("actionText").textContent=data.action;
+    document.getElementById("recommendationText").textContent = data.escalate
+        ? `This customer needs human attention — ${data.escalation_reason}.`
+        : `Continue assisting automatically. Detected as a "${data.category.toLowerCase()}" issue with ${data.sentiment} sentiment.`;
 
-    showToast("Sentiment analysis completed successfully!");
+    document.getElementById("actionText").textContent = data.escalate
+        ? "Escalate to a human agent"
+        : "Continue AI-assisted resolution";
 
 }
 /* ==========================================
@@ -197,6 +155,11 @@ function showToast(message){
    UTILITIES
 ========================================== */
 
+function capitalize(str){
+    if(!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function initializeTheme(){
 
     const buttons=document.querySelectorAll(".icon-btn");
@@ -219,7 +182,7 @@ function initializeNotifications(){
 
     buttons[0].addEventListener("click",()=>{
 
-        alert("No new notifications.");
+        showToast("No new notifications.");
 
     });
 
@@ -233,7 +196,7 @@ function initializeProfile(){
 
     profile.addEventListener("click",()=>{
 
-        alert("Profile page coming soon.");
+        showToast("Profile settings coming soon.");
 
     });
 

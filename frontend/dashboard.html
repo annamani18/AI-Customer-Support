@@ -30,7 +30,7 @@
         <header class="topbar">
 
             <div>
-                <h1>Dashboard</h1>
+                <h1 id="welcomeMessage">Dashboard</h1>
                 <p>Welcome back! Here's what's happening today.</p>
             </div>
 
@@ -61,26 +61,26 @@
 
             <div class="stat-card">
                 <h3>Today's Tickets</h3>
-                <h2>142</h2>
-                <span>+12%</span>
+                <h2 id="statTicketsToday">—</h2>
+                <span id="statTicketsTodayTag">Loading…</span>
             </div>
 
             <div class="stat-card">
                 <h3>Resolved</h3>
-                <h2>118</h2>
-                <span>83%</span>
+                <h2 id="statResolved">—</h2>
+                <span id="statResolvedTag">Loading…</span>
             </div>
 
             <div class="stat-card">
-                <h3>Customer Satisfaction</h3>
-                <h2>96%</h2>
-                <span>Excellent</span>
+                <h3>Active Tickets</h3>
+                <h2 id="statActive">—</h2>
+                <span id="statActiveTag">Loading…</span>
             </div>
 
             <div class="stat-card">
-                <h3>Avg Response</h3>
-                <h2>28 sec</h2>
-                <span>⚡ Fast</span>
+                <h3>Escalated</h3>
+                <h2 id="statEscalated">—</h2>
+                <span id="statEscalatedTag">Loading…</span>
             </div>
 
         </section>
@@ -102,17 +102,9 @@
 
                 <h2>Recent Activity</h2>
 
-                <ul>
+                <ul id="recentActivityList">
 
-                    <li>✅ Ticket #201 resolved</li>
-
-                    <li>🤖 AI answered refund query</li>
-
-                    <li>📩 New customer joined chat</li>
-
-                    <li>⚠ Escalated technical issue</li>
-
-                    <li>😊 Positive feedback received</li>
+                    <li>Loading recent activity…</li>
 
                 </ul>
 
@@ -130,6 +122,8 @@
                 lucide.createIcons();
             });
     </script>
+
+    <script src="js/dashboard.js"></script>
 
 </body>
 

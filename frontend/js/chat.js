@@ -278,9 +278,44 @@ function renderEscalationBanner(reason){
 
     `;
 
-    banner.querySelector(".escalate-btn").addEventListener("click", () => {
+    banner.querySelector(".escalate-btn").addEventListener("click", (e) => {
 
-        alert("Connecting you to a support agent. (Live handoff comes with the queueing/notifications work in a later phase.)");
+        const btn = e.currentTarget;
+
+        if(!currentConversationId){
+            banner.querySelector("p").textContent = "Send a message first so there's a conversation to escalate.";
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = "Connecting…";
+
+        window.SupportAIAuth.authFetch(`${API_BASE_URL}/tickets/escalate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                conversation_id: currentConversationId,
+                reason: reason || null
+            })
+        })
+        .then((response) => {
+            if(!response.ok) throw new Error(`Server responded with ${response.status}`);
+            return response.json();
+        })
+        .then((data) => {
+            banner.querySelector("p").textContent = `You're connected to a human agent — ticket #${data.ticket_id.slice(0, 8).toUpperCase()} is open.`;
+            btn.remove();
+            const ticketEl = document.getElementById("panelTicketId");
+            if(ticketEl) ticketEl.textContent = `#${data.ticket_id.slice(0, 8).toUpperCase()}`;
+            const statusEl = document.getElementById("panelStatus");
+            if(statusEl) statusEl.textContent = "Escalated";
+        })
+        .catch((error) => {
+            btn.disabled = false;
+            btn.textContent = "Connect me to a human agent";
+            banner.querySelector("p").textContent = "Couldn't reach a human agent right now — please try again.";
+            console.error("Escalation failed:", error);
+        });
 
     });
 

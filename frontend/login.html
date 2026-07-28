@@ -223,6 +223,12 @@ button[type="submit"]:disabled{
 </div>
 
 <script src="js/auth-guard.js"></script>
+<script>
+    // Already logged in? Don't make them log in again.
+    if (window.SupportAIAuth && window.SupportAIAuth.getToken()) {
+        window.location.replace("dashboard.html");
+    }
+</script>
 <script src="js/login.js"></script>
 
 </body>

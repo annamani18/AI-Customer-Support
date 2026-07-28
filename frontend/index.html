@@ -22,11 +22,13 @@
 <script src="js/auth-guard.js"></script>
 
 <script>
-    // This page has no unique content of its own — if we got here
-    // (i.e. auth-guard.js didn't already redirect to login.html),
-    // it means we're logged in, so go straight to the dashboard.
+    // This page has no unique content of its own — it's just the entry
+    // router. Logged-in users go to the dashboard, everyone else goes
+    // to login.html.
     if (window.SupportAIAuth && window.SupportAIAuth.getToken()) {
         window.location.replace("dashboard.html");
+    } else {
+        window.location.replace("login.html");
     }
 </script>
 

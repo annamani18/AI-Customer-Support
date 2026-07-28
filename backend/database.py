@@ -2,7 +2,7 @@ import os
 import uuid
 from datetime import datetime
 
-from sqlalchemy import create_engine, Column, String, Text, DateTime, Boolean, ForeignKey
+from sqlalchemy import create_engine, Column, String, Text, DateTime, Boolean, ForeignKey, inspect, text
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from dotenv import load_dotenv
 
@@ -24,6 +24,9 @@ class User(Base):
     id = Column(String, primary_key=True, default=gen_uuid)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
+    name = Column(String, nullable=True)
+    role = Column(String, default="Support Agent")
+    is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
@@ -70,5 +73,32 @@ def get_db():
         db.close()
 
 
+def _run_lightweight_migrations():
+    """
+    Base.metadata.create_all() only creates tables that don't exist yet —
+    it does NOT add new columns to a table that's already on disk. This
+    adds the name/role/is_admin columns to an existing 'users' table
+    (from before this update) without touching any existing rows/data.
+    """
+    inspector = inspect(engine)
+
+    if "users" not in inspector.get_table_names():
+        return
+
+    existing_columns = {col["name"] for col in inspector.get_columns("users")}
+
+    migrations = {
+        "name": "ALTER TABLE users ADD COLUMN name VARCHAR",
+        "role": "ALTER TABLE users ADD COLUMN role VARCHAR",
+        "is_admin": "ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT 0",
+    }
+
+    with engine.begin() as conn:
+        for column, ddl in migrations.items():
+            if column not in existing_columns:
+                conn.execute(text(ddl))
+
+
 def init_db():
     Base.metadata.create_all(bind=engine)
+    _run_lightweight_migrations()
