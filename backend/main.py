@@ -219,12 +219,17 @@ async def handle_chat(payload: ChatRequest, db: Session = Depends(get_db), curre
                 "ticket_id": None,
             }
 
-        # Get or create conversation
+        # Get or create conversation — scoped to the logged-in user so one
+        # account can never read or continue another account's conversation
         conv = None
         if payload.conversation_id:
-            conv = db.query(Conversation).filter(Conversation.id == payload.conversation_id).first()
+            conv = (
+                db.query(Conversation)
+                .filter(Conversation.id == payload.conversation_id, Conversation.user_id == current_user.id)
+                .first()
+            )
         if conv is None:
-            conv = Conversation()
+            conv = Conversation(user_id=current_user.id)
             db.add(conv)
             db.commit()
             db.refresh(conv)
@@ -242,7 +247,7 @@ async def handle_chat(payload: ChatRequest, db: Session = Depends(get_db), curre
         # Ticket Database stage — create/update a ticket if escalation is needed
         ticket_id = None
         if result["escalate"]:
-            ticket_id = ticket_service.create_or_update_ticket(db, conv.id, result)
+            ticket_id = ticket_service.create_or_update_ticket(db, conv.id, result, current_user.id)
 
         return {
             "conversation_id": conv.id,
@@ -302,14 +307,14 @@ def knowledge_search(payload: ClassifyRequest, current_user: User = Depends(get_
 @app.get("/tickets")
 def get_tickets(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
-        return ticket_service.list_tickets(db)
+        return ticket_service.list_tickets(db, current_user.id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/tickets/{ticket_id}")
 def get_ticket(ticket_id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    detail = ticket_service.get_ticket_detail(db, ticket_id)
+    detail = ticket_service.get_ticket_detail(db, ticket_id, current_user.id)
     if not detail:
         raise HTTPException(status_code=404, detail="Ticket not found")
     return detail
@@ -317,7 +322,7 @@ def get_ticket(ticket_id: str, db: Session = Depends(get_db), current_user: User
 
 @app.patch("/tickets/{ticket_id}/status")
 def patch_ticket_status(ticket_id: str, payload: StatusUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    ticket, error = ticket_service.update_status(db, ticket_id, payload.status)
+    ticket, error = ticket_service.update_status(db, ticket_id, payload.status, current_user.id)
     if error == "Ticket not found":
         raise HTTPException(status_code=404, detail=error)
     if error:
@@ -329,7 +334,11 @@ def patch_ticket_status(ticket_id: str, payload: StatusUpdate, db: Session = Dep
 
 @app.post("/tickets/escalate")
 def escalate_conversation(payload: EscalateRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    conv = db.query(Conversation).filter(Conversation.id == payload.conversation_id).first()
+    conv = (
+        db.query(Conversation)
+        .filter(Conversation.id == payload.conversation_id, Conversation.user_id == current_user.id)
+        .first()
+    )
     if not conv:
         raise HTTPException(status_code=404, detail="Conversation not found")
 
@@ -339,8 +348,8 @@ def escalate_conversation(payload: EscalateRequest, db: Session = Depends(get_db
         "urgency": "high",
         "sentiment": "neutral",
     }
-    ticket_id = ticket_service.create_or_update_ticket(db, conv.id, classification)
-    ticket, error = ticket_service.update_status(db, ticket_id, "escalated")
+    ticket_id = ticket_service.create_or_update_ticket(db, conv.id, classification, current_user.id)
+    ticket, error = ticket_service.update_status(db, ticket_id, "escalated", current_user.id)
     if error:
         raise HTTPException(status_code=500, detail=error)
 
@@ -356,7 +365,7 @@ def escalate_conversation(payload: EscalateRequest, db: Session = Depends(get_db
 @app.get("/analytics/summary")
 def get_analytics(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
-        return analytics_service.get_summary(db)
+        return analytics_service.get_summary(db, current_user.id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

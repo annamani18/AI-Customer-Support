@@ -1,12 +1,18 @@
 from sqlalchemy.orm import Session
-from database import Ticket, Message
+from database import Ticket, Message, Conversation
 
 VALID_STATUSES = {"open", "pending", "resolved", "escalated"}
 
 
-def create_or_update_ticket(db: Session, conversation_id: str, classification: dict):
-    """Creates a new ticket for this conversation, or updates the existing one."""
-    existing = db.query(Ticket).filter(Ticket.conversation_id == conversation_id).first()
+def create_or_update_ticket(db: Session, conversation_id: str, classification: dict, user_id: str):
+    """Creates a new ticket for this conversation, or updates the existing one.
+    Always scoped to the calling user so one account can never edit
+    another account's ticket, even if it somehow knew the conversation id."""
+    existing = (
+        db.query(Ticket)
+        .filter(Ticket.conversation_id == conversation_id, Ticket.user_id == user_id)
+        .first()
+    )
 
     if existing:
         existing.intent = classification["intent"]
@@ -19,6 +25,7 @@ def create_or_update_ticket(db: Session, conversation_id: str, classification: d
 
     new_ticket = Ticket(
         conversation_id=conversation_id,
+        user_id=user_id,
         intent=classification["intent"],
         category=classification["category"],
         urgency=classification["urgency"],
@@ -32,8 +39,13 @@ def create_or_update_ticket(db: Session, conversation_id: str, classification: d
     return new_ticket.id
 
 
-def list_tickets(db: Session):
-    tickets = db.query(Ticket).order_by(Ticket.created_at.desc()).all()
+def list_tickets(db: Session, user_id: str):
+    tickets = (
+        db.query(Ticket)
+        .filter(Ticket.user_id == user_id)
+        .order_by(Ticket.created_at.desc())
+        .all()
+    )
     return [
         {
             "id": t.id,
@@ -49,8 +61,8 @@ def list_tickets(db: Session):
     ]
 
 
-def get_ticket_detail(db: Session, ticket_id: str):
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+def get_ticket_detail(db: Session, ticket_id: str, user_id: str):
+    ticket = db.query(Ticket).filter(Ticket.id == ticket_id, Ticket.user_id == user_id).first()
     if not ticket:
         return None
 
@@ -72,12 +84,12 @@ def get_ticket_detail(db: Session, ticket_id: str):
     }
 
 
-def update_status(db: Session, ticket_id: str, status: str):
+def update_status(db: Session, ticket_id: str, status: str, user_id: str):
     status = status.strip().lower()
     if status not in VALID_STATUSES:
         return None, f"status must be one of {sorted(VALID_STATUSES)}"
 
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+    ticket = db.query(Ticket).filter(Ticket.id == ticket_id, Ticket.user_id == user_id).first()
     if not ticket:
         return None, "Ticket not found"
 

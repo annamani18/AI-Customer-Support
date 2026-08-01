@@ -4,19 +4,22 @@ from sqlalchemy.orm import Session
 from database import Conversation, Ticket
 
 
-def get_summary(db: Session) -> dict:
-    total_conversations = db.query(Conversation).count()
-    total_tickets = db.query(Ticket).count()
-    active_tickets = db.query(Ticket).filter(Ticket.status == "open").count()
-    resolved_tickets = db.query(Ticket).filter(Ticket.status == "resolved").count()
-    escalated_tickets = db.query(Ticket).filter(Ticket.status == "escalated").count()
+def get_summary(db: Session, user_id: str) -> dict:
+    conv_query = db.query(Conversation).filter(Conversation.user_id == user_id)
+    ticket_query = db.query(Ticket).filter(Ticket.user_id == user_id)
+
+    total_conversations = conv_query.count()
+    total_tickets = ticket_query.count()
+    active_tickets = ticket_query.filter(Ticket.status == "open").count()
+    resolved_tickets = ticket_query.filter(Ticket.status == "resolved").count()
+    escalated_tickets = ticket_query.filter(Ticket.status == "escalated").count()
 
     today_start = datetime.combine(datetime.utcnow().date(), datetime.min.time())
-    tickets_today = db.query(Ticket).filter(Ticket.created_at >= today_start).count()
+    tickets_today = ticket_query.filter(Ticket.created_at >= today_start).count()
 
     resolution_rate = round((resolved_tickets / total_tickets) * 100, 1) if total_tickets else 0
 
-    tickets = db.query(Ticket).all()
+    tickets = ticket_query.all()
     category_distribution = {}
     sentiment_distribution = {"positive": 0, "neutral": 0, "negative": 0}
 
