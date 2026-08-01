@@ -1,4 +1,10 @@
-<aside class="sidebar">
+<button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="sidebarNav">
+    <i data-lucide="menu"></i>
+</button>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<aside class="sidebar" id="sidebarNav">
 
     <div class="logo">
 
@@ -10,6 +16,10 @@
             <h2>SupportAI</h2>
             <p>Customer Assistant</p>
         </div>
+
+        <button type="button" class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+            <i data-lucide="x"></i>
+        </button>
 
     </div>
 
@@ -63,7 +73,7 @@
 
             <i data-lucide="log-out"></i>
 
-            Logout
+            <span>Logout</span>
 
         </button>
 

@@ -1,11 +1,359 @@
-@media(max-width:992px){
+/* ==========================================
+   AI CUSTOMER SUPPORT ASSISTANT
+   RESPONSIVE.CSS
+   Global responsive shell: sidebar, hamburger,
+   overlay, and cross-page safety nets.
 
+   This file is intentionally the LAST stylesheet
+   loaded on every page so it can override the
+   page-specific CSS at each breakpoint without
+   needing !important everywhere.
+
+   Each page's own CSS file (tickets.css,
+   analytics.css, etc.) still owns ITS internal
+   grid/card responsiveness — this file only owns
+   the shared shell: sidebar + page-wrapper offset
+   + global overflow/touch-target/font safety nets.
+========================================== */
+
+
+/* ==========================================
+   GLOBAL SAFETY NET (all sizes)
+   Belt-and-braces against horizontal scroll from
+   any element (image, pre, long word, etc.) that
+   individual page CSS doesn't already guard.
+========================================== */
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
-@media(max-width:768px){
-
+*, *::before, *::after {
+    min-width: 0;
 }
 
-@media(max-width:576px){
+img, svg, video, canvas {
+    max-width: 100%;
+    height: auto;
+}
 
+pre, code {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+
+/* ==========================================
+   TABLET  (769px – 1024px)
+   Sidebar collapses into a narrow icon rail
+   instead of disappearing — matches the
+   "collapse into icons" spec for tablets.
+========================================== */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+
+    .sidebar {
+        width: 88px;
+        padding: 24px 14px;
+    }
+
+    .sidebar .logo {
+        gap: 0;
+        justify-content: center;
+        margin-bottom: 40px;
+    }
+
+    .sidebar .logo-text,
+    .sidebar .menu li span,
+    .sidebar .logout-btn span,
+    .sidebar-close {
+        display: none;
+    }
+
+    .sidebar .menu li {
+        justify-content: center;
+        padding: 14px;
+    }
+
+    .sidebar .logout-btn {
+        padding: 14px;
+    }
+
+    /* Every page's content wrapper needs to match the
+       narrower rail instead of the desktop 270px. */
+    .main-content,
+    .chat-page,
+    .tickets-page,
+    .intent-page,
+    .knowledge-page,
+    .analytics-page,
+    .reports-page,
+    .settings-page,
+    .sentiment-page {
+        margin-left: 88px;
+        padding: 24px;
+    }
+
+    /* Two-column dashboards on tablet, per spec */
+    .stats-grid,
+    .dashboard-grid,
+    .ticket-stats,
+    .analytics-cards,
+    .reports-cards,
+    .results-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .chat-container {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+
+/* ==========================================
+   MOBILE  (≤768px)
+========================================== */
+
+@media (max-width: 768px) {
+
+    /* ---------- Hamburger + overlay come alive ---------- */
+
+    .mobile-menu-toggle {
+        display: flex;
+    }
+
+    .sidebar-overlay {
+        display: block;
+        pointer-events: none;
+    }
+
+    .sidebar-overlay.active {
+        pointer-events: all;
+    }
+
+    /* ---------- Sidebar becomes an off-canvas drawer ---------- */
+
+    .sidebar {
+        width: 78vw;
+        max-width: 300px;
+        padding: 28px 22px;
+        transform: translateX(-100%);
+        overflow-y: auto;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar .logo-text,
+    .sidebar .menu li span,
+    .sidebar .logout-btn span {
+        display: block;
+    }
+
+    .sidebar-close {
+        display: flex;
+    }
+
+    .sidebar .logo {
+        margin-bottom: 36px;
+        padding-right: 40px; /* room for the close button */
+    }
+
+    /* Prevent background scrolling while the drawer is open */
+    body.sidebar-open-lock {
+        overflow: hidden;
+    }
+
+    /* ---------- Every page reclaims full width ---------- */
+
+    .main-content,
+    .chat-page,
+    .tickets-page,
+    .intent-page,
+    .knowledge-page,
+    .analytics-page,
+    .reports-page,
+    .settings-page,
+    .sentiment-page {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px 16px;
+        /* leave room so page content doesn't sit under the
+           fixed hamburger button in the top-left corner */
+        padding-top: 76px;
+    }
+
+    /* ---------- Topbars / navbars stack ---------- */
+
+    .topbar,
+    .chat-navbar,
+    .tickets-navbar,
+    .intent-navbar,
+    .knowledge-navbar,
+    .analytics-navbar,
+    .reports-navbar,
+    .settings-navbar,
+    .sentiment-navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .top-actions,
+    .navbar-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    /* ---------- Cards/grids stack to one column ---------- */
+
+    .stats-grid,
+    .dashboard-grid,
+    .ticket-stats,
+    .analytics-cards,
+    .reports-cards,
+    .results-grid,
+    .recommendation-grid,
+    .charts-grid,
+    .bottom-grid,
+    .chat-container {
+        grid-template-columns: 1fr !important;
+    }
+
+    .chat-container {
+        height: auto !important;
+    }
+
+    /* Chat window is the primary task on mobile — show it
+       first, history and customer details stack below it
+       and scroll internally instead of forcing page-level
+       horizontal scroll. */
+    .chat-window {
+        order: 1;
+        height: 65vh;
+    }
+
+    .chat-history {
+        order: 2;
+        max-height: 260px;
+        overflow-y: auto;
+    }
+
+    .customer-panel {
+        order: 3;
+        max-height: 320px;
+        overflow-y: auto;
+    }
+
+    /* ---------- Tables become horizontally scrollable
+       within their own box instead of blowing out the page ---------- */
+
+    .ticket-table,
+    .history-section,
+    .history-card,
+    table {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        min-width: 480px; /* keeps columns legible; scrolls inside its wrapper, not the page */
+    }
+
+    /* ---------- Forms go single-column ---------- */
+
+    .setting-row,
+    .filter-bar,
+    .report-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .setting-row select,
+    .setting-row input,
+    .filter-bar select,
+    .filter-bar input {
+        width: 100%;
+    }
+
+    /* ---------- Buttons wrap instead of overflowing ---------- */
+
+    .navbar-actions,
+    .top-actions,
+    .report-buttons {
+        flex-wrap: wrap;
+    }
+
+    /* ---------- Touch targets ≥44px ---------- */
+
+    button,
+    .btn-primary,
+    .icon-btn,
+    input,
+    select,
+    textarea,
+    .menu li,
+    .logout-btn {
+        min-height: 44px;
+    }
+
+    /* ---------- Font scaling ---------- */
+
+    h1 { font-size: 24px !important; }
+    h2 { font-size: 20px !important; }
+    .topbar h1,
+    .chat-navbar h1,
+    .tickets-navbar h1,
+    .intent-navbar h1,
+    .knowledge-navbar h1,
+    .analytics-navbar h1,
+    .reports-navbar h1,
+    .settings-navbar h1,
+    .sentiment-navbar h1 {
+        font-size: 24px;
+    }
+
+    .stat-card h2,
+    .result-card h2 {
+        font-size: 26px;
+    }
+}
+
+
+/* ==========================================
+   SMALL PHONES (≤380px)
+   Extra breathing room reduction for the
+   narrowest common devices (iPhone SE etc.)
+========================================== */
+
+@media (max-width: 380px) {
+
+    .main-content,
+    .chat-page,
+    .tickets-page,
+    .intent-page,
+    .knowledge-page,
+    .analytics-page,
+    .reports-page,
+    .settings-page,
+    .sentiment-page {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .stat-card,
+    .card,
+    .result-card,
+    .chart-card,
+    .activity-card {
+        padding: 18px;
+    }
 }

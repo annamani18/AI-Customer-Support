@@ -400,3 +400,75 @@ body.dark .search-box{
     opacity:.9;
 }
 
+
+/* ==========================
+      RESPONSIVE
+========================== */
+
+@media(max-width:1100px){
+
+.chat-container{
+    grid-template-columns:240px 1fr;
+}
+
+.customer-panel{
+    display:none;
+}
+
+}
+
+@media(max-width:768px){
+
+.chat-page{
+    margin-left:0;
+    padding:20px 16px;
+    padding-top:76px;
+}
+
+.chat-navbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:16px;
+}
+
+.chat-navbar h1{
+    font-size:24px;
+}
+
+.search-box{
+    width:100%;
+}
+
+.chat-container{
+    display:flex;
+    flex-direction:column;
+    height:auto;
+}
+
+.chat-history{
+    order:2;
+    max-height:220px;
+    overflow-y:auto;
+}
+
+.chat-window{
+    order:1;
+    height:65vh;
+}
+
+.customer-panel{
+    order:3;
+    display:block;
+    max-height:300px;
+    overflow-y:auto;
+}
+
+.message-box{
+    flex-wrap:wrap;
+}
+
+.message-box input{
+    min-width:0;
+}
+
+}

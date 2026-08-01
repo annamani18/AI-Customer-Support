@@ -301,3 +301,54 @@
     transform:translateY(0);
 
 }
+/* ==========================
+      RESPONSIVE
+========================== */
+
+@media(max-width:1100px){
+
+.results-grid{
+    grid-template-columns:repeat(2,1fr);
+}
+
+.recommendation-grid{
+    grid-template-columns:1fr;
+}
+
+}
+
+@media(max-width:768px){
+
+.sentiment-page{
+    margin-left:0;
+    padding:20px 16px;
+    padding-top:76px;
+}
+
+.sentiment-navbar{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:16px;
+}
+
+.sentiment-navbar h1{
+    font-size:24px;
+}
+
+.search-box{
+    width:100%;
+}
+
+.results-grid{
+    grid-template-columns:1fr;
+}
+
+.recommendation-grid{
+    grid-template-columns:1fr;
+}
+
+.message-card{
+    padding:20px;
+}
+
+}
