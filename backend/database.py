@@ -33,6 +33,7 @@ class User(Base):
 class Conversation(Base):
     __tablename__ = "conversations"
     id = Column(String, primary_key=True, default=gen_uuid)
+    user_id = Column(String, ForeignKey("users.id"), nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     messages = relationship("Message", back_populates="conversation", cascade="all, delete-orphan")
@@ -54,6 +55,7 @@ class Ticket(Base):
     __tablename__ = "tickets"
     id = Column(String, primary_key=True, default=gen_uuid)
     conversation_id = Column(String, ForeignKey("conversations.id"))
+    user_id = Column(String, ForeignKey("users.id"), nullable=True, index=True)
     intent = Column(String, default="General inquiry")
     category = Column(String, default="General")
     urgency = Column(String, default="low")       # low | medium | high
@@ -77,26 +79,39 @@ def _run_lightweight_migrations():
     """
     Base.metadata.create_all() only creates tables that don't exist yet —
     it does NOT add new columns to a table that's already on disk. This
-    adds the name/role/is_admin columns to an existing 'users' table
-    (from before this update) without touching any existing rows/data.
+    adds columns introduced after the original schema to any existing
+    database without touching current rows/data:
+      - users.name / users.role / users.is_admin
+      - conversations.user_id / tickets.user_id (data-isolation fix —
+        rows created before this migration will have user_id = NULL and
+        will simply no longer show up for any user, since every query
+        now filters by the logged-in user's id. Nothing is deleted.)
     """
     inspector = inspect(engine)
+    table_names = inspector.get_table_names()
 
-    if "users" not in inspector.get_table_names():
-        return
-
-    existing_columns = {col["name"] for col in inspector.get_columns("users")}
-
-    migrations = {
-        "name": "ALTER TABLE users ADD COLUMN name VARCHAR",
-        "role": "ALTER TABLE users ADD COLUMN role VARCHAR",
-        "is_admin": "ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT 0",
+    table_migrations = {
+        "users": {
+            "name": "ALTER TABLE users ADD COLUMN name VARCHAR",
+            "role": "ALTER TABLE users ADD COLUMN role VARCHAR",
+            "is_admin": "ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT 0",
+        },
+        "conversations": {
+            "user_id": "ALTER TABLE conversations ADD COLUMN user_id VARCHAR",
+        },
+        "tickets": {
+            "user_id": "ALTER TABLE tickets ADD COLUMN user_id VARCHAR",
+        },
     }
 
     with engine.begin() as conn:
-        for column, ddl in migrations.items():
-            if column not in existing_columns:
-                conn.execute(text(ddl))
+        for table, migrations in table_migrations.items():
+            if table not in table_names:
+                continue
+            existing_columns = {col["name"] for col in inspector.get_columns(table)}
+            for column, ddl in migrations.items():
+                if column not in existing_columns:
+                    conn.execute(text(ddl))
 
 
 def init_db():
