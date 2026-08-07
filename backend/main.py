@@ -484,3 +484,30 @@ def create_ticket_manually(payload: CreateTicketRequest, db: Session = Depends(g
         "status": ticket.status,
         "created_at": ticket.created_at.isoformat(),
     }
+
+
+# ---------- /auth/admin/bootstrap ----------
+# One-time-use safety valve: promotes an existing account to admin, but
+# ONLY if zero admins currently exist. Once any admin exists, this always
+# 403s, so it cannot be used to take over the app later — use the normal
+# "Promote" button in admin-users.html for that instead.
+
+class BootstrapAdminRequest(BaseModel):
+    email: str
+
+
+@app.post("/auth/admin/bootstrap")
+def bootstrap_admin(payload: BootstrapAdminRequest, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.is_admin == True).count() > 0:  # noqa: E712
+        raise HTTPException(status_code=403, detail="An admin already exists. Use the Promote button instead.")
+
+    email = payload.email.strip().lower()
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="No account with that email. Sign up first.")
+
+    user.is_admin = True
+    user.role = "Administrator"
+    db.commit()
+
+    return {"email": user.email, "is_admin": True, "message": "Promoted. You can now log in at admin-login.html."}
