@@ -373,3 +373,16 @@ def get_analytics(db: Session = Depends(get_db), current_user: User = Depends(ge
 @app.get("/")
 def root():
     return {"status": "API is online", "docs": "/docs"}
+
+ @app.patch("/admin/users/{user_id}/role")
+async def update_user_role(user_id: int, data: dict, current_user: User = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Not an admin")
+    session = SessionLocal()
+    user = session.query(User).filter(User.id == user_id).first()
+    if user:
+        user.is_admin = data.get("is_admin", user.is_admin)
+        user.role = data.get("role", user.role)
+        session.commit()
+    session.close()
+    return {"status": "success"}

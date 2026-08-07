@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management | Admin</title>
+    <link rel="stylesheet" href="css/style.css"> <!-- Using your existing styles -->
+    <style>
+        /* Small custom styles for the table */
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .admin-table th, .admin-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .admin-table th { background-color: #f8f9fa; color: #333; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-admin { background: #e3f2fd; color: #1976d2; }
+        .badge-user { background: #f5f5f5; color: #616161; }
+        .btn-promote { background: #4caf50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .btn-promote:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Main Content Area -->
+        <main class="main-content" style="margin-left: 0; padding: 40px;">
+            <div class="header-actions">
+                <h1>User Management (Admin)</h1>
+                <a href="dashboard.html" class="btn-secondary">← Back to Dashboard</a>
+            </div>
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userList">
+                    <tr><td colspan="5">Loading users...</td></tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <!-- Use your existing auth logic -->
+    <script src="js/auth-guard.js"></script>
+    <script>
+        // 1. Protect the page: only let admins stay here
+        async function initPage() {
+            await requireAuth(); // Existing function from auth-guard.js
+            loadUsers();
+        }
+
+        // 2. Fetch all users from the backend
+        async function loadUsers() {
+            try {
+                // authFetch is your existing helper that sends the JWT token
+                const users = await authFetch('/admin/users'); 
+                const tbody = document.getElementById('userList');
+                
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5">No users found.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td><strong>${user.name || 'No Name'}</strong></td>
+                        <td>${user.email}</td>
+                        <td>${user.role || 'User'}</td>
+                        <td>
+                            <span class="badge ${user.is_admin ? 'badge-admin' : 'badge-user'}">
+                                ${user.is_admin ? 'ADMIN' : 'STANDARD'}
+                            </span>
+                        </td>
+                        <td>
+                            ${!user.is_admin ? `
+                                <button class="btn-promote" onclick="promoteUser(${user.id})">
+                                    Make Admin
+                                </button>
+                            ` : '---'}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                document.getElementById('userList').innerHTML = '<tr><td colspan="5" style="color:red;">Error loading users. Make sure you are an Admin.</td></tr>';
+            }
+        }
+
+        // 3. Call the new endpoint you just added to main.py
+        async function promoteUser(userId) {
+            if (!confirm("Promote this user to Admin status?")) return;
+            
+            try {
+                await authFetch(`/admin/users/${userId}/role`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ is_admin: true, role: 'Administrator' })
+                });
+                alert("User promoted successfully!");
+                loadUsers(); // Refresh the list
+            } catch (err) {
+                alert("Failed to promote user: " + err.message);
+            }
+        }
+
+        window.onload = initPage;
+    </script>
+</body>
+</html>
