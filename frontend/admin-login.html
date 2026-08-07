@@ -17,11 +17,12 @@
     <script>
         document.getElementById('loginForm').onsubmit = async (e) => {
             e.preventDefault();
-            const res = await fetch('https://ai-customer-support-backend-pard.onrender.com/auth/admin/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email.value, password: password.value })
-            });
+            const res = await fetch('/auth/admin/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email.value, password: password.value })
+});
+            
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem('token', data.access_token);

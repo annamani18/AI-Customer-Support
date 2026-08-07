@@ -440,3 +440,36 @@ async def get_admin_stats(current_user: User = Depends(get_current_user)):
     }
     session.close()
     return stats
+@app.post("/auth/admin/login")
+async def admin_login(data: dict):
+    email = data.get("email")
+    password = data.get("password")
+
+    # This is the MASTER KEY - it works even if the DB is empty
+    if email == "admin@test.com" and password == "password123":
+        token = create_access_token(data={"sub": "admin@test.com"})
+        
+        # This part ensures the Admin user exists in DB so stats work
+        try:
+            session = SessionLocal()
+            user = session.query(User).filter(User.email == "admin@test.com").first()
+            if not user:
+                user = User(email="admin@test.com", password="password123", is_admin=True, role="Administrator")
+                session.add(user)
+                session.commit()
+            session.close()
+        except:
+            pass
+            
+        return {"access_token": token, "token_type": "bearer"}
+
+    # Standard check for other users
+    session = SessionLocal()
+    user = session.query(User).filter(User.email == email).first()
+    if not user or user.password != password or not user.is_admin:
+        session.close()
+        raise HTTPException(status_code=401, detail="Invalid Admin Credentials")
+    
+    token = create_access_token(data={"sub": user.email})
+    session.close()
+    return {"access_token": token, "token_type": "bearer"}
