@@ -7,7 +7,7 @@ import re
 import time
 import traceback
 
-from database import get_db, init_db, Conversation, Message, User
+from database import get_db, init_db, Conversation, Message, User, Ticket
 from chatbot.engine import ChatbotEngine
 from chatbot.classifier import classify
 from retrieval.retriever import KnowledgeRetriever
@@ -374,102 +374,113 @@ def get_analytics(db: Session = Depends(get_db), current_user: User = Depends(ge
 def root():
     return {"status": "API is online", "docs": "/docs"}
 
- @app.patch("/admin/users/{user_id}/role")
-async def update_user_role(user_id: int, data: dict, current_user: User = Depends(get_current_user)):
-    if not current_user.is_admin:
-        raise HTTPException(status_code=403, detail="Not an admin")
-    session = SessionLocal()
-    user = session.query(User).filter(User.id == user_id).first()
-    if user:
-        user.is_admin = data.get("is_admin", user.is_admin)
-        user.role = data.get("role", user.role)
-        session.commit()
-    session.close()
-    return {"status": "success"}
 
-    # --- SCROLL TO THE VERY BOTTOM OF backend/main.py AND ADD THIS ---
- @app.post("/auth/admin/login")
-async def admin_login(data: dict):
-    session = SessionLocal()
-    email = data.get("email")
-    password = data.get("password")
+# ---------- Schemas (admin) ----------
 
-    # 1. Look for the user
-    user = session.query(User).filter(User.email == email).first()
+class AdminLoginRequest(BaseModel):
+    email: str
+    password: str
 
-    # 2. EMERGENCY OVERRIDE:
-    # If you use this specific email, it will CREATE the admin account for you
-    # if it doesn't exist, so you can't fail.
-    if email == "admin@test.com":
-        if not user:
-            # Create the admin user on the fly
-            user = User(email="admin@test.com", password="password123", is_admin=True, role="Administrator")
-            session.add(user)
-            session.commit()
-            session.refresh(user)
-        elif not user.is_admin:
-            user.is_admin = True
-            session.commit()
 
-    # 3. Standard Login Check
-    if not user or user.password != password:
-        session.close()
-        raise HTTPException(status_code=401, detail="Invalid Credentials")
+class RoleUpdateRequest(BaseModel):
+    is_admin: Optional[bool] = None
+    role: Optional[str] = None
+
+
+class CreateTicketRequest(BaseModel):
+    subject: str
+    description: Optional[str] = None
+    priority: Optional[str] = "low"       # low | medium | high
+    category: Optional[str] = "General"
+
+
+# ---------- /auth/admin/login ----------
+# Reuses the exact same User table, hashed passwords, and JWT helper as the
+# regular /auth/login above. The only difference is it also checks is_admin.
+
+@app.post("/auth/admin/login")
+def admin_login(payload: AdminLoginRequest, db: Session = Depends(get_db)):
+    email = payload.email.strip().lower()
+
+    user = db.query(User).filter(User.email == email).first()
+    if not user or not verify_password(payload.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Incorrect email or password.")
 
     if not user.is_admin:
-        session.close()
-        raise HTTPException(status_code=403, detail="Account is not an Admin")
+        raise HTTPException(status_code=403, detail="This account does not have admin access.")
 
-    token = create_access_token(data={"sub": user.email})
-    session.close()
-    return {"access_token": token, "token_type": "bearer"}
+    token = create_access_token({"sub": user.id})
+    return {"access_token": token, "token_type": "bearer", "email": user.email}
+
+
+# ---------- /admin/users/{user_id}/role ----------
+
+@app.patch("/admin/users/{user_id}/role")
+def update_user_role(user_id: str, payload: RoleUpdateRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required.")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    if payload.is_admin is not None:
+        user.is_admin = payload.is_admin
+    if payload.role is not None:
+        user.role = payload.role.strip() or user.role
+
+    db.commit()
+    db.refresh(user)
+    return {"id": user.id, "email": user.email, "role": user.role, "is_admin": user.is_admin}
+
+
+# ---------- /admin/stats ----------
 
 @app.get("/admin/stats")
-async def get_admin_stats(current_user: User = Depends(get_current_user)):
+def get_admin_stats(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not current_user.is_admin:
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
-    session = SessionLocal()
-    # Pulling real counts from your existing tables
-    stats = {
-        "total_users": session.query(User).count(),
-        "total_tickets": session.query(Ticket).count(),
-        "open_tickets": session.query(Ticket).filter(Ticket.status == "open").count(),
-        "closed_tickets": session.query(Ticket).filter(Ticket.status == "resolved").count(),
-        "ai_conversations": session.query(Message).distinct(Message.conversation_id).count()
+        raise HTTPException(status_code=403, detail="Admin access required.")
+
+    return {
+        "total_users": db.query(User).count(),
+        "total_tickets": db.query(Ticket).count(),
+        "open_tickets": db.query(Ticket).filter(Ticket.status == "open").count(),
+        "closed_tickets": db.query(Ticket).filter(Ticket.status == "resolved").count(),
+        "ai_conversations": db.query(Conversation).count(),
     }
-    session.close()
-    return stats
-@app.post("/auth/admin/login")
-async def admin_login(data: dict):
-    email = data.get("email")
-    password = data.get("password")
 
-    # This is the MASTER KEY - it works even if the DB is empty
-    if email == "admin@test.com" and password == "password123":
-        token = create_access_token(data={"sub": "admin@test.com"})
-        
-        # This part ensures the Admin user exists in DB so stats work
-        try:
-            session = SessionLocal()
-            user = session.query(User).filter(User.email == "admin@test.com").first()
-            if not user:
-                user = User(email="admin@test.com", password="password123", is_admin=True, role="Administrator")
-                session.add(user)
-                session.commit()
-            session.close()
-        except:
-            pass
-            
-        return {"access_token": token, "token_type": "bearer"}
 
-    # Standard check for other users
-    session = SessionLocal()
-    user = session.query(User).filter(User.email == email).first()
-    if not user or user.password != password or not user.is_admin:
-        session.close()
-        raise HTTPException(status_code=401, detail="Invalid Admin Credentials")
-    
-    token = create_access_token(data={"sub": user.email})
-    session.close()
-    return {"access_token": token, "token_type": "bearer"}
+# ---------- POST /tickets (manual "Create Ticket" button) ----------
+# Existing tickets are created automatically by the chatbot on escalation
+# (see ticket_service.create_or_update_ticket above). This adds the ability
+# for a staff member to open a ticket by hand from the Tickets page, using
+# the same Ticket table — conversation_id is simply left blank.
+
+@app.post("/tickets")
+def create_ticket_manually(payload: CreateTicketRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    priority = (payload.priority or "low").strip().lower()
+    if priority not in {"low", "medium", "high"}:
+        priority = "low"
+
+    ticket = Ticket(
+        conversation_id=None,
+        user_id=current_user.id,
+        intent=payload.subject.strip() or "General inquiry",
+        category=(payload.category or "General").strip() or "General",
+        urgency=priority,
+        sentiment="neutral",
+        escalate=False,
+        status="open",
+    )
+    db.add(ticket)
+    db.commit()
+    db.refresh(ticket)
+
+    return {
+        "id": ticket.id,
+        "intent": ticket.intent,
+        "category": ticket.category,
+        "urgency": ticket.urgency,
+        "status": ticket.status,
+        "created_at": ticket.created_at.isoformat(),
+    }

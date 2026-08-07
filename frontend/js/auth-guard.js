@@ -15,7 +15,7 @@
 
     // Pages that should NOT be bounced to login.html automatically.
     // "" covers the root path ("/") when Vercel rewrites it internally.
-    const PUBLIC_PAGES = ["login.html", "index.html", ""];
+    const PUBLIC_PAGES = ["login.html", "index.html", "", "admin-login.html"];
 
     let cachedUser = null;
 

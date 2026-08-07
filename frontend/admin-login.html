@@ -14,18 +14,21 @@
         </form>
         <p id="msg" style="color:red; text-align:center; font-size:14px; margin-top:10px;"></p>
     </div>
-    
-       <script>
-    document.getElementById('adminForm').addEventListener('submit', async (e) => {
+
+    <script src="js/auth-guard.js"></script>
+    <script>
+    const API_BASE_URL = "https://ai-customer-support-backend-pard.onrender.com";
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        console.log("Login button clicked..."); // This tells you the button is working
 
         const emailField = document.getElementById('email').value;
         const passwordField = document.getElementById('password').value;
-        const msg = document.getElementById('err');
+        const msg = document.getElementById('msg');
+        msg.innerText = "";
 
         try {
-            const res = await fetch('/auth/admin/login', {
+            const res = await fetch(`${API_BASE_URL}/auth/admin/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: emailField, password: passwordField })
@@ -34,18 +37,19 @@
             const data = await res.json();
 
             if (res.ok) {
-                console.log("Login successful!");
-                localStorage.setItem('token', data.access_token);
+                // Use the same session storage as every other page (login.html,
+                // dashboard.html, etc.) so auth-guard.js recognizes this login
+                // everywhere, not just on this one page.
+                window.SupportAIAuth.setSession(data.access_token, emailField);
                 window.location.href = 'admin-dashboard.html';
             } else {
                 msg.innerText = data.detail || "Error logging in";
             }
         } catch (error) {
             console.error("Network error:", error);
-            msg.innerText = "Backend is still starting up. Please wait 1 minute.";
+            msg.innerText = "Could not reach the server. Please try again.";
         }
     });
-</script>
-    
+    </script>
 </body>
 </html>

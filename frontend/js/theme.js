@@ -1,40 +1,63 @@
-// frontend/js/theme.js - Minimal Additive Logic
+/* ==========================================
+   THEME.JS — reusable dark-mode toggle
+   Drop <script src="js/theme.js"></script> onto any
+   page that doesn't already wire up its own theme
+   toggle, and it will:
+     1. Restore the saved theme on load
+     2. Wire the page's moon/sun icon button to toggle it
+     3. Persist the choice in localStorage
+   Applies both "dark" and "dark-mode" classes to <body>
+   so it works with existing CSS in either page-specific
+   files (which use body.dark) or style.css (body.dark-mode).
+========================================== */
 
-const initThemeSystem = () => {
-    // 1. Find your existing button by searching for common names
-    // This looks for classes or IDs you likely already have
-    const themeToggle = document.querySelector('.theme-toggle, .mode-switch, #theme-toggle, .dark-light-toggle, [onclick*="toggleTheme"]');
+(function () {
 
-    if (!themeToggle) {
-        console.warn("Theme toggle element not found. Please ensure your button has a class like 'theme-toggle'.");
-        return;
+    const STORAGE_KEY = "supportai-theme"; // "dark" | "light"
+
+    function applyTheme(theme) {
+        const isDark = theme === "dark";
+        document.body.classList.toggle("dark", isDark);
+        document.body.classList.toggle("dark-mode", isDark);
     }
 
-    // 2. Function to apply the theme
-    const applyTheme = (theme) => {
-        if (theme === 'dark') {
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
-        }
-        localStorage.setItem('selected-theme', theme);
-    };
+    function currentTheme() {
+        return localStorage.getItem(STORAGE_KEY) || "light";
+    }
 
-    // 3. Load saved preference
-    const savedTheme = localStorage.getItem('selected-theme') || 'light';
-    applyTheme(savedTheme);
+    function setTheme(theme) {
+        localStorage.setItem(STORAGE_KEY, theme);
+        applyTheme(theme);
+    }
 
-    // 4. Attach event to your EXISTING button
-    themeToggle.addEventListener('click', (e) => {
-        e.preventDefault();
-        const isDark = document.body.classList.contains('dark-mode');
-        applyTheme(isDark ? 'light' : 'dark');
-    });
-};
+    function toggleTheme() {
+        setTheme(currentTheme() === "dark" ? "light" : "dark");
+    }
 
-// Run without breaking other scripts
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initThemeSystem);
-} else {
-    initThemeSystem();
-}
+    function findToggleButton() {
+        const moonIcon = document.querySelector('[data-lucide="moon"], [data-lucide="sun"]');
+        if (moonIcon) return moonIcon.closest("button");
+        return document.querySelector('.theme-toggle, .mode-switch, #theme-toggle, .dark-light-toggle');
+    }
+
+    function init() {
+        applyTheme(currentTheme());
+
+        const btn = findToggleButton();
+        if (!btn) return;
+
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            toggleTheme();
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
+
+    window.SupportAITheme = { setTheme, toggleTheme, currentTheme };
+
+})();

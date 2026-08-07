@@ -13,7 +13,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadTickets();
 
+    initializeCreateTicket();
+
 });
+
+
+/* ==========================================
+   CREATE TICKET
+========================================== */
+
+function initializeCreateTicket(){
+
+    const openBtn = document.querySelector(".create-ticket");
+    const modal = document.getElementById("createTicketModal");
+    const cancelBtn = document.getElementById("cancelCreateTicket");
+    const form = document.getElementById("createTicketForm");
+
+    if(!openBtn || !modal || !form) return;
+
+    openBtn.addEventListener("click", () => {
+        modal.style.display = "flex";
+    });
+
+    cancelBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+
+    form.addEventListener("submit", (e) => {
+
+        e.preventDefault();
+
+        const subject = document.getElementById("ticketSubject").value.trim();
+        const description = document.getElementById("ticketDescription").value.trim();
+        const priority = document.getElementById("ticketPriority").value;
+
+        if(!subject) return;
+
+        window.SupportAIAuth.authFetch(`${API_BASE_URL}/tickets`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subject, description, priority })
+        })
+        .then(response => {
+
+            if(!response.ok) throw new Error(`Server responded with ${response.status}`);
+
+            return response.json();
+
+        })
+        .then(() => {
+
+            form.reset();
+            modal.style.display = "none";
+            loadTickets();
+
+        })
+        .catch(error => {
+
+            console.error("Failed to create ticket:", error);
+            alert("Couldn't create the ticket. Please try again.");
+
+        });
+
+    });
+
+}
 
 
 /* ==========================================

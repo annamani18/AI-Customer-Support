@@ -45,12 +45,15 @@
 
     <!-- Use your existing auth logic -->
     <script src="js/auth-guard.js"></script>
-    <script src="js/auth-guard.js"></script>
 <script>
+    const API_BASE_URL = "https://ai-customer-support-backend-pard.onrender.com";
+
     async function loadData() {
-        await requireAuth(); // Safety check
+        window.SupportAIAuth.requireAuth(); // Safety check
         try {
-            const users = await authFetch('/admin/users');
+            const response = await window.SupportAIAuth.authFetch(`${API_BASE_URL}/admin/users`);
+            if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+            const users = await response.json();
             const tbody = document.getElementById('userList');
             if (!tbody) return;
 
@@ -63,20 +66,25 @@
                 <tr>
                     <td>${u.name || 'User'}</td>
                     <td>${u.email}</td>
-                    <td>${u.role || 'Student'}</td>
+                    <td>${u.role || 'Support Agent'}</td>
                     <td>${u.is_admin ? '<b>Admin</b>' : 'Standard'}</td>
                     <td>
-                        ${!u.is_admin ? `<button onclick="promote(${u.id})">Promote</button>` : '---'}
+                        ${!u.is_admin ? `<button class="btn-promote" onclick="promote('${u.id}')">Promote</button>` : '---'}
                     </td>
                 </tr>
             `).join('');
-        } catch (e) { console.error(e); }
+        } catch (e) {
+            console.error(e);
+            const tbody = document.getElementById('userList');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="5">Could not load users.</td></tr>';
+        }
     }
 
     async function promote(id) {
         if(!confirm("Promote to Admin?")) return;
-        await authFetch(`/admin/users/${id}/role`, {
+        await window.SupportAIAuth.authFetch(`${API_BASE_URL}/admin/users/${id}/role`, {
             method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ is_admin: true, role: 'Administrator' })
         });
         loadData();
