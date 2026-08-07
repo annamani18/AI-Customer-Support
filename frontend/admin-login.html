@@ -14,23 +14,38 @@
         </form>
         <p id="msg" style="color:red; text-align:center; font-size:14px; margin-top:10px;"></p>
     </div>
-    <script>
-        document.getElementById('loginForm').onsubmit = async (e) => {
-            e.preventDefault();
+    
+       <script>
+    document.getElementById('adminForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log("Login button clicked..."); // This tells you the button is working
+
+        const emailField = document.getElementById('email').value;
+        const passwordField = document.getElementById('password').value;
+        const msg = document.getElementById('err');
+
+        try {
             const res = await fetch('/auth/admin/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email.value, password: password.value })
-});
-            
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: emailField, password: passwordField })
+            });
+
             const data = await res.json();
+
             if (res.ok) {
+                console.log("Login successful!");
                 localStorage.setItem('token', data.access_token);
                 window.location.href = 'admin-dashboard.html';
             } else {
-                document.getElementById('msg').innerText = data.detail || "Login Failed";
+                msg.innerText = data.detail || "Error logging in";
             }
-        };
-    </script>
+        } catch (error) {
+            console.error("Network error:", error);
+            msg.innerText = "Backend is still starting up. Please wait 1 minute.";
+        }
+    });
+</script>
+    
 </body>
 </html>
