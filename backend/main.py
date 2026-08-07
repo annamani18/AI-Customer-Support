@@ -386,3 +386,41 @@ async def update_user_role(user_id: int, data: dict, current_user: User = Depend
         session.commit()
     session.close()
     return {"status": "success"}
+
+    # --- SCROLL TO THE VERY BOTTOM OF backend/main.py AND ADD THIS ---
+
+@app.post("/auth/admin/login")
+async def admin_login(data: dict):
+    session = SessionLocal()
+    user = session.query(User).filter(User.email == data.get("email")).first()
+    
+    # Verify password (matches your existing logic) and check admin status
+    if not user or user.password != data.get("password"):
+        session.close()
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    if not user.is_admin:
+        session.close()
+        raise HTTPException(status_code=403, detail="Not authorized as Admin")
+    
+    # Use your existing token function
+    token = create_access_token(data={"sub": user.email})
+    session.close()
+    return {"access_token": token, "token_type": "bearer"}
+
+@app.get("/admin/stats")
+async def get_admin_stats(current_user: User = Depends(get_current_user)):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    session = SessionLocal()
+    # Pulling real counts from your existing tables
+    stats = {
+        "total_users": session.query(User).count(),
+        "total_tickets": session.query(Ticket).count(),
+        "open_tickets": session.query(Ticket).filter(Ticket.status == "open").count(),
+        "closed_tickets": session.query(Ticket).filter(Ticket.status == "resolved").count(),
+        "ai_conversations": session.query(Message).distinct(Message.conversation_id).count()
+    }
+    session.close()
+    return stats

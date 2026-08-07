@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body style="display:flex; justify-content:center; align-items:center; height:100vh; background:#f0f2f5; font-family:sans-serif;">
+    <div style="background:white; padding:30px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); width:320px;">
+        <h2 style="text-align:center; color:#1a73e8;">Admin Portal</h2>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:4px;">
+            <input type="password" id="password" placeholder="Password" required style="width:100%; padding:10px; margin:10px 0; border:1px solid #ddd; border-radius:4px;">
+            <button type="submit" style="width:100%; padding:10px; background:#1a73e8; color:white; border:none; border-radius:4px; cursor:pointer;">Login</button>
+        </form>
+        <p id="msg" style="color:red; text-align:center; font-size:14px; margin-top:10px;"></p>
+    </div>
+    <script>
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const res = await fetch('https://ai-customer-support-backend-pard.onrender.com/auth/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email.value, password: password.value })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.setItem('token', data.access_token);
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                document.getElementById('msg').innerText = data.detail || "Login Failed";
+            }
+        };
+    </script>
+</body>
+</html>

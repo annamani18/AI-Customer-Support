@@ -45,66 +45,44 @@
 
     <!-- Use your existing auth logic -->
     <script src="js/auth-guard.js"></script>
-    <script>
-        // 1. Protect the page: only let admins stay here
-        async function initPage() {
-            await requireAuth(); // Existing function from auth-guard.js
-            loadUsers();
-        }
+    <script src="js/auth-guard.js"></script>
+<script>
+    async function loadData() {
+        await requireAuth(); // Safety check
+        try {
+            const users = await authFetch('/admin/users');
+            const tbody = document.getElementById('userList');
+            if (!tbody) return;
 
-        // 2. Fetch all users from the backend
-        async function loadUsers() {
-            try {
-                // authFetch is your existing helper that sends the JWT token
-                const users = await authFetch('/admin/users'); 
-                const tbody = document.getElementById('userList');
-                
-                if (users.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5">No users found.</td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = users.map(user => `
-                    <tr>
-                        <td><strong>${user.name || 'No Name'}</strong></td>
-                        <td>${user.email}</td>
-                        <td>${user.role || 'User'}</td>
-                        <td>
-                            <span class="badge ${user.is_admin ? 'badge-admin' : 'badge-user'}">
-                                ${user.is_admin ? 'ADMIN' : 'STANDARD'}
-                            </span>
-                        </td>
-                        <td>
-                            ${!user.is_admin ? `
-                                <button class="btn-promote" onclick="promoteUser(${user.id})">
-                                    Make Admin
-                                </button>
-                            ` : '---'}
-                        </td>
-                    </tr>
-                `).join('');
-            } catch (err) {
-                document.getElementById('userList').innerHTML = '<tr><td colspan="5" style="color:red;">Error loading users. Make sure you are an Admin.</td></tr>';
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">No users found</td></tr>';
+                return;
             }
-        }
 
-        // 3. Call the new endpoint you just added to main.py
-        async function promoteUser(userId) {
-            if (!confirm("Promote this user to Admin status?")) return;
-            
-            try {
-                await authFetch(`/admin/users/${userId}/role`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ is_admin: true, role: 'Administrator' })
-                });
-                alert("User promoted successfully!");
-                loadUsers(); // Refresh the list
-            } catch (err) {
-                alert("Failed to promote user: " + err.message);
-            }
-        }
+            tbody.innerHTML = users.map(u => `
+                <tr>
+                    <td>${u.name || 'User'}</td>
+                    <td>${u.email}</td>
+                    <td>${u.role || 'Student'}</td>
+                    <td>${u.is_admin ? '<b>Admin</b>' : 'Standard'}</td>
+                    <td>
+                        ${!u.is_admin ? `<button onclick="promote(${u.id})">Promote</button>` : '---'}
+                    </td>
+                </tr>
+            `).join('');
+        } catch (e) { console.error(e); }
+    }
 
-        window.onload = initPage;
-    </script>
+    async function promote(id) {
+        if(!confirm("Promote to Admin?")) return;
+        await authFetch(`/admin/users/${id}/role`, {
+            method: 'PATCH',
+            body: JSON.stringify({ is_admin: true, role: 'Administrator' })
+        });
+        loadData();
+    }
+
+    window.onload = loadData; // This fixes the "Loading..." issue
+</script>
 </body>
 </html>
