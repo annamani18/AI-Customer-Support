@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/chat.css">
     <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="css/premium-ui.css">
+    <link rel="stylesheet" href="css/ui-polish.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -106,63 +107,25 @@
 
                 </div>
 
-                <div class="history-list">
+                <div class="history-list" id="historyList">
                     <div class="history-item active">
 
-                        <img src="assets/avatars/avatar1.png" alt="">
+                        <div class="avatar-fallback"><i data-lucide="message-circle"></i></div>
 
                         <div>
 
-                            <h4>Sarah Johnson</h4>
+                            <h4>Current session</h4>
 
-                            <p>Refund Request</p>
+                            <p id="historySubtitle">New conversation</p>
 
                         </div>
 
                     </div>
 
-                    <div class="history-item">
+                </div>
 
-                        <img src="assets/avatars/avatar2.png" alt="">
-
-                        <div>
-
-                            <h4>David Miller</h4>
-
-                            <p>Shipping Delay</p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="history-item">
-
-                        <img src="assets/avatars/avatar3.png" alt="">
-
-                        <div>
-
-                            <h4>Emma Wilson</h4>
-
-                            <p>Password Reset</p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="history-item">
-
-                        <img src="assets/avatars/avatar4.png" alt="">
-
-                        <div>
-
-                            <h4>John Carter</h4>
-
-                            <p>Payment Failed</p>
-
-                        </div>
-
-                    </div>
-
+                <div class="empty-state" style="padding:20px 16px;">
+                    <p class="empty-state-text">Past-conversation history isn't tracked yet — each session starts fresh. Tickets created from a chat still show up under Tickets.</p>
                 </div>
 
             </aside>  
@@ -174,7 +137,7 @@
 
                     <div>
 
-                        <h3>Sarah Johnson</h3>
+                        <h3 id="chatHeaderTitle">Web Visitor</h3>
 
                         <span>🟢 Online</span>
 
@@ -182,55 +145,12 @@
 
                 </div>
 
-                <div class="messages">
-                    <div class="message customer">
-
-                        <p>
-
-                            Hi! I want to return the shoes I ordered.
-
-                        </p>
-
-                        <span>10:10 AM</span>
-
+                <div class="messages" id="messagesEmpty">
+                    <div class="empty-state" style="height:100%; justify-content:center;">
+                        <div class="empty-state-icon"><i data-lucide="message-square"></i></div>
+                        <p class="empty-state-title">Start the conversation</p>
+                        <p class="empty-state-text">Send a message below and the AI assistant will reply here, using your live knowledge base and ticketing system.</p>
                     </div>
-
-                    <div class="message ai">
-
-                        <p>
-
-                            Certainly! I'd be happy to help. Could you please provide your order ID?
-
-                        </p>
-
-                        <span>10:11 AM</span>
-
-                    </div>
-
-                    <div class="message customer">
-
-                        <p>
-
-                            Order ID: ORD458912
-
-                        </p>
-
-                        <span>10:12 AM</span>
-
-                    </div>
-
-                    <div class="message ai">
-
-                        <p>
-
-                            Thank you. I found your order. It is eligible for a return. Would you like me to initiate the return request?
-
-                        </p>
-
-                        <span>10:12 AM</span>
-
-                    </div>
-
                 </div>
                 <div class="message-box">
 
@@ -273,11 +193,11 @@
 
                 <div class="customer-card">
 
-                    <img src="assets/avatars/avatar1.png" alt="">
+                    <div class="avatar-fallback"><i data-lucide="user"></i></div>
 
-                    <h4>Sarah Johnson</h4>
+                    <h4>Web Visitor</h4>
 
-                    <p>Premium Customer</p>
+                    <p>Identity isn't tracked yet — this is a live, unauthenticated chat session.</p>
 
                 </div>
 

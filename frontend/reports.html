@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="css/reports.css">
 <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="css/premium-ui.css">
+    <link rel="stylesheet" href="css/ui-polish.css">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -177,13 +178,9 @@ Export CSV
 
 </h2>
 
-<p id="summaryText">
+<p id="summaryText" style="color:var(--text-light,#64748B);">
 
-Today the AI Customer Support Assistant successfully handled 248 customer conversations.
-
-Refund requests were the most common issue, followed by password reset requests.
-
-Customer satisfaction increased by 6% while average response time remained below 20 seconds.
+Click "Generate Report" to create a live AI summary from your current conversation and ticket data.
 
 </p>
 
@@ -220,49 +217,13 @@ Recent Reports
 
 <tr>
 
-<td>Daily Report</td>
-
-<td>AI System</td>
-
-<td>15 Jul 2026</td>
-
-<td>Completed</td>
-
-</tr>
-
-<tr>
-
-<td>Weekly Report</td>
-
-<td>Admin</td>
-
-<td>14 Jul 2026</td>
-
-<td>Completed</td>
-
-</tr>
-
-<tr>
-
-<td>Monthly Analytics</td>
-
-<td>AI System</td>
-
-<td>01 Jul 2026</td>
-
-<td>Completed</td>
-
-</tr>
-
-<tr>
-
-<td>Customer Feedback</td>
-
-<td>Support Team</td>
-
-<td>30 Jun 2026</td>
-
-<td>Completed</td>
+<td colspan="4" class="empty-state-cell">
+    <div class="empty-state">
+        <div class="empty-state-icon"><i data-lucide="file-text"></i></div>
+        <p class="empty-state-title">No reports yet</p>
+        <p class="empty-state-text">Reports you generate or export will appear here.</p>
+    </div>
+</td>
 
 </tr>
 

@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="css/analytics.css">
 <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="css/premium-ui.css">
+    <link rel="stylesheet" href="css/ui-polish.css">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 
@@ -148,11 +149,15 @@ HM
 
 <h2>
 
-Monthly Ticket Trends <small style="font-weight:400;opacity:.6;">(demo data)</small>
+Monthly Ticket Trends
 
 </h2>
 
-<canvas id="ticketChart"></canvas>
+<div class="empty-state">
+    <div class="empty-state-icon"><i data-lucide="trending-up"></i></div>
+    <p class="empty-state-title">No trend data available yet</p>
+    <p class="empty-state-text">Monthly ticket trends will appear here once your backend tracks ticket volume over time.</p>
+</div>
 
 </div>
 
@@ -187,40 +192,14 @@ Sentiment Distribution
 
 <h2>
 
-🤖 AI Performance <small style="font-weight:400;opacity:.6;">(demo data)</small>
+🤖 AI Performance
 
 </h2>
 
-<div class="performance-item">
-
-<span>Intent Detection</span>
-
-<strong>98%</strong>
-
-</div>
-
-<div class="performance-item">
-
-<span>Knowledge Retrieval</span>
-
-<strong>96%</strong>
-
-</div>
-
-<div class="performance-item">
-
-<span>Sentiment Analysis</span>
-
-<strong>97%</strong>
-
-</div>
-
-<div class="performance-item">
-
-<span>Chat Response</span>
-
-<strong>99%</strong>
-
+<div class="empty-state" style="padding:24px 8px;">
+    <div class="empty-state-icon"><i data-lucide="gauge"></i></div>
+    <p class="empty-state-title">Not tracked yet</p>
+    <p class="empty-state-text">Per-feature accuracy (intent detection, retrieval, sentiment) isn't measured by the backend yet.</p>
 </div>
 
 </div>
@@ -234,17 +213,9 @@ Recent Activity
 
 </h2>
 
-<ul>
+<ul id="recentActivityList">
 
-<li>🟢 Refund Ticket #CS1023 resolved</li>
-
-<li>🔵 Knowledge retrieved for Order Tracking</li>
-
-<li>🟣 Intent detected: Password Reset</li>
-
-<li>🟠 Customer sentiment changed to Positive</li>
-
-<li>🟢 AI answered 142 conversations today</li>
+<li>Loading recent activity…</li>
 
 </ul>
 

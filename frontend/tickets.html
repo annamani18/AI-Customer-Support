@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/tickets.css">
     <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="css/premium-ui.css">
+    <link rel="stylesheet" href="css/ui-polish.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -91,7 +92,7 @@
 
         <h3>Total Tickets</h3>
 
-        <h2>248</h2>
+        <h2><span class="skeleton skeleton-text">—</span></h2>
 
     </div>
 
@@ -99,7 +100,7 @@
 
         <h3>Open</h3>
 
-        <h2>86</h2>
+        <h2><span class="skeleton skeleton-text">—</span></h2>
 
     </div>
 
@@ -107,7 +108,7 @@
 
         <h3>Resolved</h3>
 
-        <h2>142</h2>
+        <h2><span class="skeleton skeleton-text">—</span></h2>
 
     </div>
 
@@ -115,7 +116,7 @@
 
         <h3>Escalated</h3>
 
-        <h2>20</h2>
+        <h2><span class="skeleton skeleton-text">—</span></h2>
 
     </div>
 
@@ -194,75 +195,12 @@
         <tbody>
 
             <tr>
-
-                <td>CS1023</td>
-
-                <td>Sarah Johnson</td>
-
-                <td>Refund Request</td>
-
-                <td><span class="high">High</span></td>
-
-                <td><span class="open">Open</span></td>
-
-                <td>AI Bot</td>
-
-                <td>
-
-                    <button><i data-lucide="eye"></i></button>
-
-                    <button><i data-lucide="square-pen"></i></button>
-
+                <td colspan="7" class="empty-state-cell">
+                    <div class="empty-state">
+                        <div class="skeleton skeleton-block" style="height:14px;width:60%;margin-bottom:8px;"></div>
+                        <div class="skeleton skeleton-block" style="height:14px;width:40%;"></div>
+                    </div>
                 </td>
-
-            </tr>
-
-            <tr>
-
-                <td>CS1024</td>
-
-                <td>David Miller</td>
-
-                <td>Login Issue</td>
-
-                <td><span class="medium">Medium</span></td>
-
-                <td><span class="pending">Pending</span></td>
-
-                <td>John</td>
-
-                <td>
-
-                    <button><i data-lucide="eye"></i></button>
-
-                    <button><i data-lucide="square-pen"></i></button>
-
-                </td>
-
-            </tr>
-
-            <tr>
-
-                <td>CS1025</td>
-
-                <td>Emma Wilson</td>
-
-                <td>Order Tracking</td>
-
-                <td><span class="low">Low</span></td>
-
-                <td><span class="resolved">Resolved</span></td>
-
-                <td>AI Bot</td>
-
-                <td>
-
-                    <button><i data-lucide="eye"></i></button>
-
-                    <button><i data-lucide="square-pen"></i></button>
-
-                </td>
-
             </tr>
 
         </tbody>

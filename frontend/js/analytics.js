@@ -10,8 +10,8 @@ let sentimentChartInstance = null;
 document.addEventListener("DOMContentLoaded", () => {
     initializeLucide();
     loadSidebar();
-    initializeStaticTicketChart(); // demo chart -- backend has no month-grouping endpoint yet
     loadAnalyticsData();
+    loadRecentActivity();
     initializeTheme();
     initializeNotifications();
     initializeProfile();
@@ -174,34 +174,41 @@ function updateSentimentChart(sentimentDistribution) {
 }
 
 /* ==========================================
-   MONTHLY TREND CHART -- DEMO DATA
-   (Backend has no "group tickets by month" endpoint yet.
-   Ask to add one if you want this to be live too.)
+   RECENT ACTIVITY (derived from real tickets,
+   same approach already used on the Dashboard)
 ========================================== */
 
-function initializeStaticTicketChart() {
+function loadRecentActivity() {
 
-    const canvas = document.getElementById("ticketChart");
-    if (!canvas) return;
+    const list = document.getElementById("recentActivityList");
+    if (!list) return;
 
-    new Chart(canvas, {
-        type: "line",
-        data: {
-            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-            datasets: [{
-                label: "Tickets (demo)",
-                data: [420, 510, 480, 620, 710, 820],
-                borderColor: "#4F46E5",
-                backgroundColor: "rgba(79,70,229,.15)",
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } }
-        }
-    });
+    window.SupportAIAuth.authFetch(`${API_BASE_URL}/tickets`)
+        .then(response => {
+            if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+            return response.json();
+        })
+        .then(tickets => {
+
+            if (!tickets || tickets.length === 0) {
+                list.innerHTML = `<li>No activity yet — activity will show up here once conversations happen.</li>`;
+                return;
+            }
+
+            const statusIcon = { open: "🟢", pending: "🟠", resolved: "✅", escalated: "⚠️" };
+            const recent = tickets.slice(0, 5);
+
+            list.innerHTML = recent.map(t => {
+                const icon = statusIcon[t.status] || "•";
+                const shortId = t.id ? t.id.slice(0, 8).toUpperCase() : "—";
+                return `<li>${icon} Ticket #${shortId} — ${t.category || "General"} (${t.status})</li>`;
+            }).join("");
+
+        })
+        .catch(error => {
+            console.error("Recent activity error:", error);
+            list.innerHTML = `<li>Couldn't load recent activity.</li>`;
+        });
 
 }
 

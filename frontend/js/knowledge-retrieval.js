@@ -151,7 +151,9 @@ function renderResults(data){
 
     }
 
-    document.getElementById("aiResponse").textContent=data.answer;
+    const aiResponseEl = document.getElementById("aiResponse");
+    aiResponseEl.style.color = "";
+    aiResponseEl.textContent = data.answer;
 
     document.getElementById("statDocuments").textContent=data.documents_found;
     document.getElementById("statConfidence").textContent=data.confidence;

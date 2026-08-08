@@ -155,6 +155,7 @@ function generateReport(){
             `Sentiment breakdown: ${summary.sentiment_distribution.positive} positive, ` +
             `${summary.sentiment_distribution.neutral} neutral, ${summary.sentiment_distribution.negative} negative.`;
 
+        summaryEl.style.color = "";
         summaryEl.textContent = text;
 
         addHistoryRow("Generated Report");
@@ -313,6 +314,9 @@ function addHistoryRow(action){
 
     const tbody = document.querySelector(".history-section tbody");
     if(!tbody) return;
+
+    const placeholder = tbody.querySelector(".empty-state-cell");
+    if(placeholder) placeholder.closest("tr").remove();
 
     const now = new Date();
     const dateStr = now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });

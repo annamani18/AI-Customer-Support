@@ -1,0 +1,540 @@
+/* ==========================================================
+   UI-POLISH.CSS
+   Additive visual + empty-state/loading-state layer only.
+   Loaded LAST (after premium-ui.css) on every page.
+   Targets existing class names / ids only — nothing here is
+   a new selector any JS file depends on for its logic, except
+   the two tiny cosmetic hooks noted inline. Safe to remove at
+   any time with zero functional impact.
+========================================================== */
+
+/* ---------- Accessibility: visible focus ring everywhere ---------- */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.menu li:focus-visible,
+.history-item:focus-visible{
+    outline: 2px solid var(--primary, #4F46E5);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+/* ==========================================================
+   CHAT BUBBLES
+   The base .message class previously had no background,
+   alignment, or color at all — this is the core fix for
+   "modern chat bubbles" / "better message alignment".
+========================================================== */
+
+.messages{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.message{
+    max-width: 72%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(15,23,42,.05);
+}
+
+.message p{
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.message > span{
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    opacity: .6;
+}
+
+/* Customer bubble: right-aligned, brand-colored */
+.message.customer{
+    align-self: flex-end;
+    background: linear-gradient(135deg, var(--primary, #4F46E5), var(--secondary, #7C3AED));
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.message.customer > span{
+    color: rgba(255,255,255,.75);
+    text-align: right;
+}
+
+/* AI bubble: left-aligned, neutral surface */
+.message.ai{
+    align-self: flex-start;
+    background: #F1F5F9;
+    color: var(--text, #1E293B);
+    border-bottom-left-radius: 4px;
+}
+
+body.dark .message.ai,
+body.dark-mode .message.ai{
+    background: rgba(255,255,255,.08);
+    color: #F1F5F9;
+}
+
+/* Typing indicator — animated dots instead of blinking "..." text */
+.message.ai.typing{
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 14px 18px;
+}
+
+.message.ai.typing p{
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0;
+}
+
+.message.ai.typing p::before,
+.message.ai.typing .dots{
+    display: none;
+}
+
+.message.ai.typing p::after{
+    content: "";
+    display: block;
+    width: 34px;
+    height: 8px;
+    background-image: radial-gradient(circle, currentColor 2.5px, transparent 3px);
+    background-size: 10px 8px;
+    background-repeat: repeat-x;
+    color: #94A3B8;
+    animation: typingDots 1.2s infinite ease-in-out;
+}
+
+@keyframes typingDots{
+    0%, 60%, 100%{ opacity: .3; }
+    30%{ opacity: 1; }
+}
+
+/* Escalation banner + badge row already have color rules elsewhere;
+   just make sure they sit inside the flex column cleanly */
+.message.escalation{
+    align-self: center;
+    max-width: 90%;
+}
+
+/* ---------- Conversation history / customer identity (no invented names) ---------- */
+
+.history-item .avatar-fallback,
+.customer-card .avatar-fallback{
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary, #4F46E5), var(--secondary, #7C3AED));
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.customer-card .avatar-fallback{
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 12px;
+}
+
+/* ==========================================================
+   EMPTY STATES
+   Reusable, professional empty-state block. Use:
+   <div class="empty-state">
+     <div class="empty-state-icon"><i data-lucide="inbox"></i></div>
+     <p class="empty-state-title">…</p>
+     <p class="empty-state-text">…</p>
+   </div>
+========================================================== */
+
+.empty-state{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text-light, #64748B);
+    gap: 6px;
+}
+
+.empty-state-icon{
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(79,70,229,.08);
+    color: var(--primary, #4F46E5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.empty-state-icon svg{
+    width: 26px;
+    height: 26px;
+}
+
+.empty-state-title{
+    font-weight: 600;
+    color: var(--text, #1E293B);
+    font-size: 15px;
+}
+
+.empty-state-text{
+    font-size: 13.5px;
+    max-width: 340px;
+    line-height: 1.5;
+}
+
+/* Empty state inside a table cell (colspan row) */
+td.empty-state-cell{
+    padding: 0 !important;
+}
+
+td.empty-state-cell .empty-state{
+    padding: 36px 20px;
+}
+
+/* ==========================================================
+   LOADING SKELETONS
+   <span class="skeleton skeleton-text"></span>
+   <div class="skeleton skeleton-block"></div>
+========================================================== */
+
+.skeleton{
+    position: relative;
+    overflow: hidden;
+    background: #E2E8F0;
+    border-radius: 8px;
+    color: transparent !important;
+    display: inline-block;
+}
+
+.skeleton::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+    animation: skeletonShimmer 1.4s infinite;
+}
+
+@keyframes skeletonShimmer{
+    from{ transform: translateX(-100%); }
+    to{ transform: translateX(100%); }
+}
+
+.skeleton-text{
+    width: 70%;
+    height: 0.9em;
+    vertical-align: middle;
+}
+
+.skeleton-block{
+    width: 100%;
+    height: 100%;
+    min-height: 40px;
+}
+
+body.dark .skeleton,
+body.dark-mode .skeleton{
+    background: rgba(255,255,255,.08);
+}
+
+/* ==========================================================
+   MATCH SCORE / SENTIMENT / STATUS BADGES
+   (Knowledge Retrieval + Intent + generic use)
+========================================================== */
+
+.match-badge{
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: .01em;
+}
+
+.match-badge.match-high{
+    background: rgba(16,185,129,.12);
+    color: var(--success, #10B981);
+}
+
+.match-badge.match-medium{
+    background: rgba(245,158,11,.12);
+    color: var(--warning, #F59E0B);
+}
+
+.match-badge.match-low{
+    background: rgba(148,163,184,.15);
+    color: #64748B;
+}
+
+.sentiment-pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
+}
+
+.sentiment-pill.sentiment-positive{
+    background: rgba(16,185,129,.12);
+    color: var(--success, #10B981);
+}
+
+.sentiment-pill.sentiment-neutral{
+    background: rgba(100,116,139,.12);
+    color: #64748B;
+}
+
+.sentiment-pill.sentiment-negative{
+    background: rgba(239,68,68,.12);
+    color: var(--danger, #EF4444);
+}
+
+/* card-header spans in knowledge-retrieval already act like a
+   match badge — refine them without touching the JS/markup */
+.knowledge-card .card-header span{
+    display: inline-flex;
+    align-items: center;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(16,185,129,.12);
+    color: var(--success, #10B981);
+}
+
+/* ==========================================================
+   DASHBOARD "ANALYTICS OVERVIEW" — nicer empty state
+========================================================== */
+
+.chart-placeholder{
+    border-style: dashed;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 15px !important;
+}
+
+.chart-placeholder::before{
+    content: "";
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(79,70,229,.08);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%234F46E5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v18h18'/%3E%3Cpath d='m19 9-5 5-4-4-3 3'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* ==========================================================
+   KPI / STAT CARDS — small icon accent + tag styling
+========================================================== */
+
+.stat-card,
+.analytics-card,
+.report-card,
+.ticket-card{
+    position: relative;
+}
+
+.stat-card span,
+#statTicketsTodayTag,
+#statResolvedTag,
+#statActiveTag,
+#statEscalatedTag{
+    display: inline-block;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(16,185,129,.1);
+    color: var(--success, #10B981);
+    margin-top: 6px;
+}
+
+/* ==========================================================
+   TICKETS TABLE — responsive card layout on small screens
+========================================================== */
+
+@media (max-width: 700px){
+
+    .ticket-table table,
+    .ticket-table thead,
+    .ticket-table tbody,
+    .ticket-table th,
+    .ticket-table td,
+    .ticket-table tr{
+        display: block;
+    }
+
+    .ticket-table thead{
+        display: none;
+    }
+
+    .ticket-table tbody tr{
+        background: var(--surface, #fff);
+        border: 1px solid var(--border, #E2E8F0);
+        border-radius: 14px;
+        margin-bottom: 14px;
+        padding: 14px 16px;
+        box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,.06));
+    }
+
+    .ticket-table tbody tr:hover{
+        background: var(--surface, #fff);
+    }
+
+    .ticket-table td{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 0;
+        border: none !important;
+        text-align: right;
+    }
+
+    .ticket-table td:not(:last-child){
+        border-bottom: 1px dashed var(--border, #E2E8F0) !important;
+    }
+
+    .ticket-table td::before{
+        content: attr(data-label);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--text-light, #64748B);
+        text-align: left;
+    }
+
+    /* min-width from responsive.css no longer needed once cards stack */
+    .ticket-table table{
+        min-width: 0 !important;
+    }
+
+    .ticket-table td[colspan] {
+        display: block;
+        text-align: center;
+    }
+
+    .ticket-table td[colspan]::before{
+        content: none;
+    }
+}
+
+/* ==========================================================
+   FILTER BAR polish
+========================================================== */
+
+.filter-bar select{
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* ==========================================================
+   CREATE-TICKET MODAL — brought into the design system
+   (overrides the inline styles already on the element without
+   removing them, so nothing breaks if this file is deleted)
+========================================================== */
+
+#createTicketModal > div{
+    background: var(--surface, #fff) !important;
+    border-radius: var(--radius-lg, 18px) !important;
+    box-shadow: var(--shadow-lg, 0 16px 40px rgba(0,0,0,.15)) !important;
+    padding: 28px !important;
+    width: 400px !important;
+}
+
+#createTicketModal h2{
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 18px !important;
+}
+
+#createTicketModal label{
+    font-weight: 600;
+    color: var(--text-light, #64748B);
+}
+
+#createTicketModal input,
+#createTicketModal textarea,
+#createTicketModal select{
+    border: 1px solid var(--border, #E2E8F0) !important;
+    border-radius: var(--radius-sm, 8px) !important;
+    font-family: 'Inter', sans-serif;
+}
+
+#createTicketModal input:focus,
+#createTicketModal textarea:focus,
+#createTicketModal select:focus{
+    border-color: var(--primary, #4F46E5) !important;
+}
+
+#createTicketModal button[type="submit"]{
+    background: var(--accent-grad, linear-gradient(135deg,#4F46E5,#7C3AED)) !important;
+    color: #fff !important;
+    font-weight: 600;
+}
+
+#createTicketModal #cancelCreateTicket{
+    background: transparent !important;
+    color: var(--text-light, #64748B) !important;
+    font-weight: 600;
+}
+
+/* ==========================================================
+   TOASTS (used by reports.js / intent.js / knowledge-retrieval.js)
+========================================================== */
+
+.toast{
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1E293B;
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 500;
+    box-shadow: 0 12px 30px rgba(0,0,0,.25);
+    opacity: 0;
+    transition: opacity .25s ease, transform .25s ease;
+    z-index: 2000;
+    pointer-events: none;
+    max-width: 90vw;
+    text-align: center;
+}
+
+.toast.show{
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================
+   MOBILE: chat bubbles a little wider so text isn't cramped
+========================================================== */
+
+@media (max-width: 480px){
+    .message{
+        max-width: 88%;
+    }
+}

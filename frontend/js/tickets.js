@@ -130,7 +130,11 @@ function loadTickets(){
 
         const tbody = document.querySelector(".ticket-table tbody");
 
-        if(tbody) tbody.innerHTML = `<tr><td colspan="7">Couldn't reach the support server.</td></tr>`;
+        if(tbody) tbody.innerHTML = emptyStateRow(
+            "wifi-off",
+            "Couldn't reach the support server",
+            "Check your connection and try refreshing the page."
+        );
 
     });
 
@@ -178,7 +182,13 @@ function renderTable(tickets){
 
     if(tickets.length === 0){
 
-        tbody.innerHTML = `<tr><td colspan="7">No tickets yet — start a conversation in Chat.</td></tr>`;
+        tbody.innerHTML = emptyStateRow(
+            "ticket",
+            "No tickets yet",
+            "Tickets created from AI Chat or escalations will show up here."
+        );
+
+        lucide.createIcons();
 
         return;
 
@@ -214,15 +224,35 @@ function ticketRow(t){
 
     return `
         <tr>
-            <td>${shortId}</td>
-            <td>Web chat</td>
-            <td>${t.intent || "General inquiry"}</td>
-            <td><span class="${priorityClass}">${capitalize(priorityClass)}</span></td>
-            <td><span class="${statusClass}">${capitalize(statusClass)}</span></td>
-            <td>${assignedTo}</td>
-            <td>
+            <td data-label="Ticket ID">${shortId}</td>
+            <td data-label="Customer">Web chat</td>
+            <td data-label="Issue">${t.intent || "General inquiry"}</td>
+            <td data-label="Priority"><span class="${priorityClass}">${capitalize(priorityClass)}</span></td>
+            <td data-label="Status"><span class="${statusClass}">${capitalize(statusClass)}</span></td>
+            <td data-label="Assigned To">${assignedTo}</td>
+            <td data-label="Actions">
                 <button class="view-ticket" data-id="${t.id}"><i data-lucide="eye"></i></button>
                 <button class="edit-ticket" data-id="${t.id}"><i data-lucide="square-pen"></i></button>
+            </td>
+        </tr>
+    `;
+
+}
+
+/* ==========================================
+   EMPTY STATE ROW (presentation helper)
+========================================== */
+
+function emptyStateRow(icon, title, text){
+
+    return `
+        <tr>
+            <td colspan="7" class="empty-state-cell">
+                <div class="empty-state">
+                    <div class="empty-state-icon"><i data-lucide="${icon}"></i></div>
+                    <p class="empty-state-title">${title}</p>
+                    <p class="empty-state-text">${text}</p>
+                </div>
             </td>
         </tr>
     `;

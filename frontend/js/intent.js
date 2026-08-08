@@ -136,6 +136,9 @@ function prependHistoryRow(message, data){
 
     if(!tbody) return;
 
+    const placeholder = tbody.querySelector(".empty-state-cell");
+    if(placeholder) placeholder.closest("tr").remove();
+
     const shortMsg = message.length > 24 ? message.slice(0, 24) + "…" : message;
 
     const row = document.createElement("tr");

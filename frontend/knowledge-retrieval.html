@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/knowledge-retrieval.css">
     <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="css/premium-ui.css">
+    <link rel="stylesheet" href="css/ui-polish.css">
 
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -80,11 +81,8 @@ Customer Query
 
 <textarea
 id="customerQuery"
-rows="5">
-
-How do I return a damaged product?
-
-</textarea>
+rows="5"
+placeholder="Type or paste a customer question to search the knowledge base..."></textarea>
 
 <button id="retrieveBtn">
 
@@ -107,58 +105,10 @@ Retrieved Knowledge Base
 
 <div id="knowledgeCardsContainer">
 
-<div class="knowledge-card">
-
-<div class="card-header">
-
-<h3>📄 Return Policy</h3>
-
-<span>98% Match</span>
-
-</div>
-
-<p>
-
-Products can be returned within 30 days if they are damaged or defective.
-
-</p>
-
-</div>
-
-<div class="knowledge-card">
-
-<div class="card-header">
-
-<h3>📄 Refund Guidelines</h3>
-
-<span>95% Match</span>
-
-</div>
-
-<p>
-
-Refunds are processed within 5–7 business days after product inspection.
-
-</p>
-
-</div>
-
-<div class="knowledge-card">
-
-<div class="card-header">
-
-<h3>📄 Shipping Policy</h3>
-
-<span>92% Match</span>
-
-</div>
-
-<p>
-
-Customers should upload product images while requesting damaged item returns.
-
-</p>
-
+<div class="empty-state">
+    <div class="empty-state-icon"><i data-lucide="search"></i></div>
+    <p class="empty-state-title">No query yet</p>
+    <p class="empty-state-text">Enter a customer question above and click "Retrieve Knowledge" to search real articles from your knowledge base.</p>
 </div>
 
 </div>
@@ -174,13 +124,9 @@ Customers should upload product images while requesting damaged item returns.
 
 <div class="response-card">
 
-<p id="aiResponse">
+<p id="aiResponse" style="color:var(--text-light,#64748B);">
 
-Based on our knowledge base, your damaged product is eligible for return within 30 days.
-
-Please upload clear images of the damaged item and your order ID.
-
-Once verified, your refund will be processed within 5–7 business days.
+Run a query above to see the AI-generated response here.
 
 </p>
 
@@ -193,7 +139,7 @@ Once verified, your refund will be processed within 5–7 business days.
 
 <h3>Documents Retrieved</h3>
 
-<h2 id="statDocuments">3</h2>
+<h2 id="statDocuments">—</h2>
 
 </div>
 
@@ -201,7 +147,7 @@ Once verified, your refund will be processed within 5–7 business days.
 
 <h3>Average Confidence</h3>
 
-<h2 id="statConfidence">95%</h2>
+<h2 id="statConfidence">—</h2>
 
 </div>
 
@@ -209,7 +155,7 @@ Once verified, your refund will be processed within 5–7 business days.
 
 <h3>Response Time</h3>
 
-<h2 id="statResponseTime">0.32s</h2>
+<h2 id="statResponseTime">—</h2>
 
 </div>
 
@@ -217,7 +163,7 @@ Once verified, your refund will be processed within 5–7 business days.
 
 <h3>Knowledge Source</h3>
 
-<h2 id="statSource">Internal KB</h2>
+<h2 id="statSource">—</h2>
 
 </div>
 

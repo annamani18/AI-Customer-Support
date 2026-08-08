@@ -93,6 +93,8 @@ function sendMessage(){
 
     if(text==="") return;
 
+    clearEmptyState(messages);
+
     const message=document.createElement("div");
 
     message.className="message customer";
@@ -114,6 +116,18 @@ function sendMessage(){
     showTyping(text);
 
 }
+/* ==========================================
+   EMPTY STATE HELPER (presentation only)
+========================================== */
+
+function clearEmptyState(messagesEl){
+
+    const placeholder = messagesEl.querySelector(".empty-state");
+
+    if(placeholder) placeholder.remove();
+
+}
+
 /* ==========================================
    AI TYPING
 ========================================== */
@@ -359,7 +373,14 @@ if(newChat){
 
         const messages=document.querySelector(".messages");
 
-        messages.innerHTML="";
+        messages.innerHTML=`
+            <div class="empty-state" style="height:100%; justify-content:center;">
+                <div class="empty-state-icon"><i data-lucide="message-square"></i></div>
+                <p class="empty-state-title">Start the conversation</p>
+                <p class="empty-state-text">Send a message below and the AI assistant will reply here, using your live knowledge base and ticketing system.</p>
+            </div>
+        `;
+        if(window.lucide) lucide.createIcons();
 
         currentConversationId = null;
 

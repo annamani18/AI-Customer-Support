@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="css/intent.css">
     <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="css/premium-ui.css">
+    <link rel="stylesheet" href="css/ui-polish.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -86,11 +87,7 @@
 
         </h2>
 
-<textarea id="customerMessage" rows="5">
-
-I received the wrong product and I want a refund.
-
-</textarea>
+<textarea id="customerMessage" rows="5" placeholder="Paste or type a customer message to analyze..."></textarea>
 
 <button id="analyzeBtn">
 
@@ -111,7 +108,7 @@ I received the wrong product and I want a refund.
 
 <h2 id="intentName">
 
-Refund Request
+—
 
 </h2>
 
@@ -135,7 +132,7 @@ Refund Request
 
 <h2 id="sentiment">
 
-Negative
+—
 
 </h2>
 
@@ -147,7 +144,7 @@ Negative
 
 <h2 id="priority">
 
-High
+—
 
 </h2>
 
@@ -219,49 +216,13 @@ Recent Intent History
 
 <tr>
 
-<td>Sarah Johnson</td>
-
-<td>Refund</td>
-
-<td>98%</td>
-
-<td>High</td>
-
-</tr>
-
-<tr>
-
-<td>David Miller</td>
-
-<td>Password Reset</td>
-
-<td>96%</td>
-
-<td>Medium</td>
-
-</tr>
-
-<tr>
-
-<td>Emma Wilson</td>
-
-<td>Order Tracking</td>
-
-<td>99%</td>
-
-<td>Low</td>
-
-</tr>
-
-<tr>
-
-<td>John Carter</td>
-
-<td>Payment Failed</td>
-
-<td>95%</td>
-
-<td>High</td>
+<td colspan="4" class="empty-state-cell">
+    <div class="empty-state">
+        <div class="empty-state-icon"><i data-lucide="brain"></i></div>
+        <p class="empty-state-title">No analysis yet</p>
+        <p class="empty-state-text">Analyzed messages will appear here as a running history.</p>
+    </div>
+</td>
 
 </tr>
 
