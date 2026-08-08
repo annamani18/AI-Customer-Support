@@ -301,7 +301,13 @@ main{ animation:pFadeUp .45s var(--p-ease) both; }
   pointer-events:none;
 }
 .topbar > *{ position:relative; z-index:1; }
-.topbar h1, .topbar #welcomeMessage{ color:#fff !important; }
+.topbar h1, .topbar #welcomeMessage{
+  color:#fff !important;
+  background:none !important;
+  -webkit-background-clip:initial !important;
+  background-clip:initial !important;
+  -webkit-text-fill-color:#fff !important;
+}
 .topbar p{ color:rgba(255,255,255,.85) !important; }
 .topbar .icon-btn{ background:rgba(255,255,255,.15) !important; border-color:rgba(255,255,255,.25) !important; color:#fff !important; }
 .topbar .icon-btn:hover{ background:rgba(255,255,255,.28) !important; color:#fff !important; }
