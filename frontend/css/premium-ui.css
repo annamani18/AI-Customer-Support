@@ -1,0 +1,283 @@
+/* ==========================================================
+   PREMIUM-UI.CSS
+   Additive visual layer only — no structural/behavioral CSS.
+   Loaded AFTER style.css / components.css / page CSS so it can
+   refine, not fight, the cascade. Targets existing class names
+   only; nothing here is a new selector your JS depends on.
+   Safe to remove at any time with zero functional impact.
+========================================================== */
+
+:root{
+    --glass-bg: rgba(255,255,255,.72);
+    --glass-border: rgba(255,255,255,.5);
+    --glass-shadow: 0 8px 32px rgba(15,23,42,.08), 0 1px 2px rgba(15,23,42,.04);
+    --glass-shadow-hover: 0 16px 40px rgba(15,23,42,.12), 0 2px 4px rgba(15,23,42,.06);
+    --accent-grad: linear-gradient(135deg,#4F46E5 0%,#7C3AED 100%);
+}
+
+/* ---------- Typography polish ---------- */
+
+body{
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+}
+
+h1, h2, h3{
+    letter-spacing: -0.02em;
+}
+
+.topbar h1, .tickets-navbar h1, .knowledge-navbar h1{
+    font-weight: 700;
+    background: var(--accent-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.topbar p, .tickets-navbar p{
+    color: #64748B;
+    font-weight: 500;
+}
+
+/* ---------- Cards: soft glass surface ---------- */
+
+.card,
+.stat-card,
+.ticket-card,
+.report-card,
+.generate-card,
+.history-section,
+.query-card,
+.knowledge-card,
+.settings-card,
+.profile-card{
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid rgba(226,232,240,.7);
+    border-radius: 18px !important;
+    box-shadow: var(--glass-shadow) !important;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.card:hover,
+.stat-card:hover,
+.ticket-card:hover{
+    transform: translateY(-3px);
+    box-shadow: var(--glass-shadow-hover) !important;
+}
+
+.stat-card h4, .stat-card h3{
+    color:#64748B;
+    font-size:13px;
+    font-weight:600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.stat-card h2{
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+/* ---------- Sidebar: glass + refined active state ---------- */
+
+.sidebar{
+    background: rgba(255,255,255,.85) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-right: 1px solid rgba(226,232,240,.6);
+}
+
+.logo-icon{
+    box-shadow: 0 8px 20px rgba(79,70,229,.35);
+}
+
+.menu li{
+    position: relative;
+    font-weight: 500;
+    color: #475569;
+}
+
+.menu li:hover{
+    background: rgba(79,70,229,.08) !important;
+    color: #4F46E5 !important;
+}
+
+.menu li.active{
+    background: var(--accent-grad) !important;
+    color: #fff !important;
+    box-shadow: 0 8px 20px rgba(79,70,229,.35);
+}
+
+.menu li.active::before{
+    content:"";
+    position:absolute;
+    left:-30px;
+    top:50%;
+    transform:translateY(-50%);
+    width:4px;
+    height:60%;
+    border-radius:0 4px 4px 0;
+    background: var(--accent-grad);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn-primary,
+.create-ticket,
+button[type="submit"],
+.logout-btn{
+    background: var(--accent-grad) !important;
+    border: none;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.btn-primary:hover,
+.create-ticket:hover,
+button[type="submit"]:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(79,70,229,.32);
+}
+
+.logout-btn{
+    background: linear-gradient(135deg,#EF4444,#DC2626) !important;
+}
+
+.logout-btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(239,68,68,.32);
+}
+
+/* ---------- Icon buttons (bell / moon / etc.) ---------- */
+
+.icon-btn{
+    background: rgba(255,255,255,.8) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(226,232,240,.7);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.icon-btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(15,23,42,.12) !important;
+}
+
+.profile{
+    box-shadow: 0 8px 20px rgba(79,70,229,.3);
+}
+
+/* ---------- Inputs ---------- */
+
+input, select, textarea{
+    border-radius: 12px !important;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+input:focus, select:focus, textarea:focus{
+    box-shadow: 0 0 0 3px rgba(79,70,229,.15);
+}
+
+/* ---------- Tables ---------- */
+
+table{
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+thead th{
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #64748B;
+    font-weight: 600;
+}
+
+tbody tr{
+    transition: background .15s ease;
+}
+
+tbody tr:hover{
+    background: rgba(79,70,229,.04);
+}
+
+/* ---------- Password eye toggle (new, additive) ---------- */
+
+.password-wrapper{
+    position: relative;
+}
+
+.password-wrapper input{
+    padding-right: 44px !important;
+}
+
+.toggle-password{
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent !important;
+    border: none;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94A3B8;
+    cursor: pointer;
+}
+
+.toggle-password:hover{
+    color: #4F46E5;
+}
+
+.toggle-password svg{
+    width: 18px;
+    height: 18px;
+}
+
+/* ---------- Dark mode compatibility ---------- */
+
+body.dark .card,
+body.dark .stat-card,
+body.dark .ticket-card,
+body.dark-mode .card,
+body.dark-mode .stat-card,
+body.dark-mode .ticket-card{
+    background: rgba(30,30,30,.75) !important;
+    border-color: rgba(255,255,255,.08);
+}
+
+body.dark .sidebar,
+body.dark-mode .sidebar{
+    background: rgba(18,18,18,.85) !important;
+    border-right-color: rgba(255,255,255,.06);
+}
+
+body.dark .icon-btn,
+body.dark-mode .icon-btn{
+    background: rgba(255,255,255,.06) !important;
+    border-color: rgba(255,255,255,.1);
+    color: #f0f0f0;
+}
+
+body.dark .menu li:hover,
+body.dark-mode .menu li:hover{
+    background: rgba(124,58,237,.18) !important;
+    color: #C4B5FD !important;
+}
+
+body.dark thead th,
+body.dark-mode thead th{
+    color: #94A3B8;
+}
+
+body.dark tbody tr:hover,
+body.dark-mode tbody tr:hover{
+    background: rgba(255,255,255,.04);
+}
+
+body.dark .toggle-password,
+body.dark-mode .toggle-password{
+    color: #64748B;
+}

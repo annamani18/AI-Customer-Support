@@ -12,6 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+<link rel="stylesheet" href="css/premium-ui.css">
+
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
@@ -196,7 +198,12 @@ button[type="submit"]:disabled{
         </div>
         <div>
             <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" required autocomplete="current-password">
+            <div class="password-wrapper">
+                <input type="password" id="loginPassword" required autocomplete="current-password">
+                <button type="button" class="toggle-password" data-target="loginPassword" aria-label="Show password" tabindex="-1">
+                    <i data-lucide="eye"></i>
+                </button>
+            </div>
         </div>
         <button type="submit" id="loginSubmit">
             <i data-lucide="log-in"></i>
@@ -217,7 +224,12 @@ button[type="submit"]:disabled{
         </div>
         <div>
             <label for="signupPassword">Password</label>
-            <input type="password" id="signupPassword" required autocomplete="new-password" minlength="8">
+            <div class="password-wrapper">
+                <input type="password" id="signupPassword" required autocomplete="new-password" minlength="8">
+                <button type="button" class="toggle-password" data-target="signupPassword" aria-label="Show password" tabindex="-1">
+                    <i data-lucide="eye"></i>
+                </button>
+            </div>
             <p class="hint">At least 8 characters.</p>
         </div>
         <button type="submit" id="signupSubmit">
@@ -236,6 +248,7 @@ button[type="submit"]:disabled{
     }
 </script>
 <script src="js/login.js"></script>
+<script src="js/password-toggle.js"></script>
 
 </body>
 
