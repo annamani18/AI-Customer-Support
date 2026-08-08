@@ -629,9 +629,18 @@ tbody tr:hover{ background:var(--p-surface-2); }
    AI CHAT
    ============================================================ */
 
-.chat-page{ display:grid !important; grid-template-columns:280px 1fr 300px !important; gap:20px !important; margin-left:calc(var(--p-sidebar-w) + 32px) !important; padding:28px 32px !important; align-items:start; }
-.chat-page > .chat-navbar{ grid-column:1 / -1; }
-@media (max-width:1180px){ .chat-page{ grid-template-columns:1fr !important; } }
+.chat-page{ margin-left:calc(var(--p-sidebar-w) + 32px) !important; padding:28px 32px 40px !important; }
+
+.chat-container{
+  display:grid !important;
+  grid-template-columns:280px 1fr 300px !important;
+  gap:20px !important;
+  align-items:start;
+}
+@media (max-width:1180px){
+  .chat-container{ grid-template-columns:1fr !important; }
+  .chat-history, .customer-panel{ max-height:none; }
+}
 
 .history-list{
   background:var(--p-surface); border:1px solid var(--p-border-soft); border-radius:var(--p-radius-lg);
